@@ -116,6 +116,7 @@ const addUser = async (req: Request, res: Response): Promise<void> => {
       success: true,
       message: 'Käyttäjä lisätty.',
       user: {
+        id: user.id,
         _id: user._id,
         name: user.name,
         username: user.username,
@@ -159,6 +160,7 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
           success: true,
           message: `Käyttäjä päivitetty! ¤`,
           user: {
+            id: user.id,
             _id: updatedUser._id,
             name: updatedUser.name,
             username: updatedUser.username,
@@ -172,6 +174,7 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
         success: true,
         message: `Käyttäjä päivitetty!`,
         user: {
+          id: user.id,
           _id: updatedUser._id,
           name: updatedUser.name,
           username: updatedUser.username,
@@ -219,6 +222,7 @@ const updateUsername = async (req: Request, res: Response): Promise<void> => {
       success: true,
       message: `Käyttäjä päivitetty!`,
       user: {
+        id: user.id,
         _id: updatedUser._id,
         name: updatedUser.name,
         username: updatedUser.username,
@@ -241,6 +245,13 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
     const user = await User.findOne({ where: { _id: id } })
 
     if (user) {
+      if (user.id === 7) {
+        res.status(400).json({
+          success: false,
+          message: 'Et voi poistaa tätä käyttäjää.',
+        })
+        return
+      }
       await user.destroy()
       res.status(200).json({
         success: true,
@@ -363,6 +374,7 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
           success: true,
           message: 'Kirjauduttu sisään',
           user: {
+            id: user.id,
             _id: user._id,
             name: user.name,
             username: user.username,
