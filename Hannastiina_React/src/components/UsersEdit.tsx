@@ -76,50 +76,58 @@ const Users = ({ user, users, windowWidth }: Props) => {
                   <tr>
                     <th>Nimi</th>
                     <th>Sähköposti</th>
-                    <th>Ylläpitäjä</th>
+                    <th>Rooli</th>
                     <th>Poista</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {users?.map((u) => (
-                    <tr
-                      key={u?._id}
-                      className={`${u?.role && u.role > 1 ? 'admin' : ''} `}
-                    >
-                      <td>
-                        <span>{u?.name}</span>
-                      </td>
-                      <td>
-                        <span>{u?.username}</span>
-                      </td>
-                      <td>
-                        <span>{u?.role && u.role > 1 ? 'Kyllä' : 'Ei'}</span>
-                      </td>
-                      <td>
-                        {user._id !== u._id && Number(u.id) !== 7 && (
-                          <button
-                            className='danger smaller'
-                            onClick={() => {
-                              if (window.confirm(`Poistetaanko ${u.name}?`))
-                                dispatch(removeUser(u._id))
-                                  .then(() =>
-                                    dispatch(notify('Käyttäjä poistettu', false, 5))
-                                  )
-                                  .then(() => dispatch(initializeUsers()))
-                                  .catch((e) => {
-                                    console.error(e)
-                                    dispatch(
-                                      notify(`Virhe: ${e.response.data.message}`, true, 8)
+                  {users?.map((u) => {
+                    return (
+                      <tr
+                        key={u?._id}
+                        className={`${u?.role && u.role > 1 ? 'admin' : ''} `}
+                      >
+                        <td>
+                          <span>{u?.name}</span>
+                        </td>
+                        <td>
+                          <span>{u?.username}</span>
+                        </td>
+                        <td>
+                          <span>
+                            {u?.role && u.role > 1 ? 'Hallinnoija' : 'Valtuutettu'}
+                          </span>
+                        </td>
+                        <td>
+                          {user._id !== u._id && Number(u.id) !== 7 && (
+                            <button
+                              className='danger smaller'
+                              onClick={() => {
+                                if (window.confirm(`Poistetaanko ${u.name}?`))
+                                  dispatch(removeUser(u._id))
+                                    .then(() =>
+                                      dispatch(notify('Käyttäjä poistettu', false, 5))
                                     )
-                                  })
-                            }}
-                          >
-                            Poista
-                          </button>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
+                                    .then(() => dispatch(initializeUsers()))
+                                    .catch((e) => {
+                                      console.error(e)
+                                      dispatch(
+                                        notify(
+                                          `Virhe: ${e.response.data.message}`,
+                                          true,
+                                          8
+                                        )
+                                      )
+                                    })
+                              }}
+                            >
+                              Poista
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             ) : (
@@ -128,8 +136,8 @@ const Users = ({ user, users, windowWidth }: Props) => {
                   <li key={u?._id} className={`${u?.role && u.role > 1 ? 'admin' : ''} `}>
                     <span>{u?.name}</span>
                     <span>({u?.username})</span>
-                    <span>{u?.role && u.role > 1 ? 'Ylläpitäjä' : ''}</span>
-                    {user._id !== u._id && (
+                    <span>{u?.role && u.role > 1 ? 'Hallinnoija' : ''}</span>
+                    {user._id !== u._id && Number(u.id) !== 7 && (
                       <button
                         className='danger smaller'
                         onClick={() => {
