@@ -85,7 +85,7 @@ header nav ul button:focus-visible > span {
 header nav ul button > span span.icon {
   transition-duration: 0.3s;
   transition-property: color, opacity;
-
+  height: 2rem;
   opacity: 0;
 }
 header nav ul button:hover > span span.icon,

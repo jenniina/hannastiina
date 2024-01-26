@@ -1,7 +1,6 @@
 import { GiComb } from 'react-icons/gi'
-import { MdLocationOn } from 'react-icons/md'
+import { FaPhoneAlt } from 'react-icons/fa'
 import img from '../assets/Hannastiina.png'
-import imgFront from '../assets/Hannastiina_teksti.png'
 import { IUser, RefObject } from '../types'
 import useEnterDirection from '../hooks/useEnterDirection'
 import styles from './css/Header.module.css'
@@ -262,7 +261,7 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
             >
               <span>
                 <span className={styles.icon}>
-                  <MdLocationOn />
+                  <FaPhoneAlt />
                 </span>
                 <span className={styles.text}>Yhteystiedot</span>
               </span>
@@ -271,7 +270,6 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
         </ul>
       </nav>
       <div className={styles.img}>
-        <img className={styles.fg} src={imgFront} alt='Parturi Kampaamo Hannastiina' />
         <img className={styles.bg} src={img} alt='tausta' aria-hidden='true' />
         <div className={styles.bottom}>
           <button
