@@ -1,0 +1,6 @@
+.accordion-inner > button:first-of-type.close {
+  display: none;
+}
+.hide {
+  display: none;
+}

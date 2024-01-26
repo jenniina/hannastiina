@@ -1,0 +1,350 @@
+fieldset {
+  display: flex;
+  padding: 0 0 1.3em;
+  /* width: 100%; */
+  max-width: calc(100vw - calc(var(--page-padding) * 4) - var(--scrollbar_width));
+  border: 0;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-items: stretch;
+  gap: 0.8em;
+}
+fieldset > * {
+  flex: 1 0 100%;
+}
+fieldset .full {
+  flex-basis: 100%;
+}
+fieldset .left {
+  text-align: left;
+}
+form {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 1.5em;
+  width: 100%;
+  max-width: calc(100vw - calc(var(--page-padding) * 4) - var(--scrollbar_width));
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  font-size: clamp(calc(1rem * var(--responsive_scale)), 1.5vw, var(--title-XS));
+  font-family: var(--text-family);
+  color: var(--dark);
+  line-height: 1.5;
+  font-weight: 400;
+  text-align: left;
+  text-transform: none;
+  text-decoration: none;
+  text-shadow: none;
+  background-color: transparent;
+  border-radius: 0;
+  box-shadow: none;
+  transition: none;
+  appearance: none;
+  outline: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  -o-appearance: none;
+}
+form .half,
+form .third {
+  flex-basis: 100%;
+}
+form .nowrap {
+  white-space: nowrap;
+}
+fieldset:not(:last-of-type) {
+  border-bottom: 1px dashed var(--color-gray-general);
+}
+legend {
+  font-size: clamp(var(--title-S), 5vw, var(--title-M));
+  letter-spacing: calc(var(--letter-spacing) * -1);
+  margin: 1em 0 0 0;
+  text-align: left;
+  font-weight: 600;
+  padding-top: 1.5em;
+  font-family: var(--title-family);
+}
+legend > p {
+  font-size: clamp(calc(1rem * var(--responsive_scale)), 1.5vw, var(--title-XS));
+  font-family: var(--text-family);
+  padding-top: 0;
+}
+@media (min-width: 300px) {
+  form .half {
+    flex-basis: 47%;
+    max-width: initial;
+  }
+  form .third {
+    flex-basis: 27%;
+    max-width: initial;
+  }
+}
+@media (min-width: 600px) {
+  fieldset {
+    gap: 1rem 0.5rem;
+    justify-content: flex-start;
+  }
+  legend {
+    padding-top: 0;
+  }
+}
+
+input,
+input[type='text' i],
+input[type='number' i],
+input[type='email' i],
+input[type='password' i],
+textarea {
+  --padd: 0.5em;
+  width: calc(100% - var(--padd) * 2);
+  line-height: 2;
+  font-size: calc(1rem * var(--responsive_scale));
+  padding: 0.2em var(--padd);
+  color: var(--dark);
+  font-family: inherit;
+  border-width: 0.09em 0.05em 0.1em 0.05em;
+  background-color: transparent;
+  border: none;
+  border-radius: var(--radius-small);
+}
+input:focus,
+input:focus-visible {
+  outline: none;
+}
+textarea {
+  width: 100%;
+}
+textarea,
+    input.bg /*give className of 'bg' to any inputs that need a background */ {
+  background-color: var(--pink-light);
+  background: var(--gradient);
+  border-bottom: solid 0.1em var(--pink-dark);
+}
+.input-wrap {
+  width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--gap) * 0.5);
+}
+.input {
+  position: relative;
+  flex: 1 1 50%;
+  display: inline-block;
+  z-index: 1;
+}
+.input::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2.3em;
+  transform-origin: bottom;
+  background-color: var(--pink-light);
+  background: var(--gradient);
+  pointer-events: none;
+  border-radius: var(--radius-small);
+  border-bottom: solid 0.15em var(--pink-dark);
+  transition-property: transform;
+  transition-timing-function: ease-in-out;
+  transition-duration: 300ms;
+  z-index: -1;
+}
+input:-internal-autofill-selected {
+  appearance: none;
+  background-color: transparent !important;
+  color: inherit !important;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:focus {
+  transition: background-color 600000s 0s, color 600000s 0s;
+  color: inherit !important;
+  -webkit-box-shadow: inset 0 0 0px 1000px transparent;
+}
+.controls {
+  align-self: flex-start;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 2em;
+  width: 100%;
+}
+.controls .closed.add-service-container {
+  flex: 0 0 40%;
+}
+
+.controls .closed.add-service-container .accordion-btn.open {
+  width: 100%;
+}
+.controls .open.add-service-container,
+.controls .open.add-service-container ~ button {
+  flex: 1 0 100%;
+  width: 100%;
+}
+.input-wrap label {
+  flex: 0 0 100%;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.5em;
+  width: 7em;
+  line-height: 1.2;
+}
+.input-wrap.searchname {
+  max-width: calc(var(--max-width) * 0.5);
+  flex-flow: column nowrap;
+}
+.input-wrap.searchname label {
+  justify-content: flex-start;
+  width: 100%;
+}
+.input-wrap.searchname .input {
+  width: 100%;
+  flex: 1 0 100%;
+}
+.input-wrap input:focus-visible {
+  outline: none;
+}
+.input-wrap .admin-input-wrap {
+  flex: 1 0 50%;
+}
+.category-select ~ button {
+  flex: 0 0 100%;
+  width: 100%;
+  margin-top: 1em;
+}
+textarea {
+  resize: vertical;
+  min-height: 4.8em;
+  line-height: 1.45;
+  padding-right: 0.25em;
+}
+input[type='color' i] {
+  height: 3.4em;
+  cursor: pointer;
+  border-width: 1px;
+  width: 48%;
+  border-radius: var(--radius-small);
+}
+input[type='checkbox' i],
+input[type='radio' i] {
+  --offset: 4px;
+  position: relative;
+  width: 1em;
+  height: 1em;
+  cursor: pointer;
+  border-radius: var(--radius-small);
+  align-self: center;
+  justify-self: center;
+  margin: 0 0 0 calc(var(--offset) * 2);
+}
+input[type='checkbox' i] {
+  margin-right: 1.3em;
+}
+.radio-checkbox {
+  position: relative;
+}
+input[type='checkbox' i]:checked,
+input[type='radio' i]:checked {
+  accent-color: var(--pink-dark);
+}
+input[type='radio' i]::before,
+input[type='checkbox' i]::before {
+  content: '';
+  position: absolute;
+  outline: 0.2em solid var(--pink);
+  outline-offset: var(--offset);
+  pointer-events: none;
+}
+input[type='radio' i]::before {
+  top: -0em;
+  left: -0em;
+  right: -0em;
+  bottom: -0em;
+  border-radius: 50%;
+  border: 1px solid var(--pink-dark);
+  background-color: var(--pink-light);
+}
+input[type='checkbox' i]::before {
+  top: -0.05em;
+  left: -0.05em;
+  right: -0.05em;
+  bottom: -0.05em;
+  border-radius: 1px;
+  outline-offset: -2px;
+}
+input[type='radio' i]:checked::before,
+input[type='checkbox' i]:checked::before {
+  outline-color: var(--pink-dark);
+  outline-width: 0.22em;
+}
+input[type='radio' i]:checked::before {
+  background-color: var(--pink-light);
+  border: 1px solid var(--pink-dark);
+}
+#root input.narrow {
+  max-width: 3rem;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+}
+#root input[type='number' i].narrow {
+  max-width: 3.3rem;
+  padding-left: 0.6em;
+  padding-right: 0;
+  text-align: center;
+}
+form.minmax {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.8em;
+}
+form.minmax > div {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.4em;
+}
+form.minmax legend {
+  padding: 0;
+  margin: 0;
+  flex: 1 0 100%;
+  font-size: inherit;
+  font-weight: normal;
+  line-height: 1.2;
+}
+
+@media (min-width: 600px) {
+  .input-wrap label {
+    flex: 0 0 30%;
+    justify-content: flex-end;
+    text-align: right;
+  }
+  .input-wrap label span {
+    text-align: right;
+  }
+}
+@media (min-width: 1000px) {
+  .controls {
+    flex-flow: row wrap;
+    align-items: flex-end;
+    justify-content: flex-start;
+  }
+  .controls > * {
+    flex: 1 0 40%;
+  }
+  .controls > button {
+    flex: 0 1 40%;
+  }
+}
