@@ -16,9 +16,10 @@ import { notify } from '../reducers/notificationReducer'
 interface Props {
   user: IUser
   users: IUser[]
+  windowWidth: number
 }
 
-const Users = ({ user, users }: Props) => {
+const Users = ({ user, users, windowWidth }: Props) => {
   const dispatch = useAppDispatch()
   const [username, setUsername] = useState('')
   const [name, setName] = useState('')
@@ -66,57 +67,93 @@ const Users = ({ user, users }: Props) => {
     <>
       {user?.role && Number(user?.role) > 1 && (
         <div className='edit'>
-          <section id='kayttajat' className='card'>
+          <section id='kayttajat' className='card kayttajat'>
             <h2>Käyttäjähallinta</h2>
             <h3>Käyttäjälista</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>Nimi</th>
-                  <th>Sähköposti</th>
-                  <th>Ylläpitäjä</th>
-                  <th>Poista</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users?.map((u) => (
-                  <tr key={u?._id} className={`${u?.role && u.role > 1 ? 'admin' : ''} `}>
-                    <td>
-                      <span>{u?.name}</span>
-                    </td>
-                    <td>
-                      <span>{u?.username}</span>
-                    </td>
-                    <td>
-                      <span>{u?.role && u.role > 1 ? 'Kyllä' : 'Ei'}</span>
-                    </td>
-                    <td>
-                      {user._id !== u._id && (
-                        <button
-                          className='danger smaller'
-                          onClick={() => {
-                            if (window.confirm(`Poistetaanko ${u.name}?`))
-                              dispatch(removeUser(u._id))
-                                .then(() =>
-                                  dispatch(notify('Käyttäjä poistettu', false, 5))
-                                )
-                                .then(() => dispatch(initializeUsers()))
-                                .catch((e) => {
-                                  console.error(e)
-                                  dispatch(
-                                    notify(`Virhe: ${e.response.data.message}`, true, 8)
-                                  )
-                                })
-                          }}
-                        >
-                          Poista
-                        </button>
-                      )}
-                    </td>
+            {windowWidth > 600 ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Nimi</th>
+                    <th>Sähköposti</th>
+                    <th>Ylläpitäjä</th>
+                    <th>Poista</th>
                   </tr>
+                </thead>
+                <tbody>
+                  {users?.map((u) => (
+                    <tr
+                      key={u?._id}
+                      className={`${u?.role && u.role > 1 ? 'admin' : ''} `}
+                    >
+                      <td>
+                        <span>{u?.name}</span>
+                      </td>
+                      <td>
+                        <span>{u?.username}</span>
+                      </td>
+                      <td>
+                        <span>{u?.role && u.role > 1 ? 'Kyllä' : 'Ei'}</span>
+                      </td>
+                      <td>
+                        {user._id !== u._id && Number(u.id) !== 7 && (
+                          <button
+                            className='danger smaller'
+                            onClick={() => {
+                              if (window.confirm(`Poistetaanko ${u.name}?`))
+                                dispatch(removeUser(u._id))
+                                  .then(() =>
+                                    dispatch(notify('Käyttäjä poistettu', false, 5))
+                                  )
+                                  .then(() => dispatch(initializeUsers()))
+                                  .catch((e) => {
+                                    console.error(e)
+                                    dispatch(
+                                      notify(`Virhe: ${e.response.data.message}`, true, 8)
+                                    )
+                                  })
+                            }}
+                          >
+                            Poista
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <ul>
+                {users?.map((u) => (
+                  <li key={u?._id} className={`${u?.role && u.role > 1 ? 'admin' : ''} `}>
+                    <span>{u?.name}</span>
+                    <span>({u?.username})</span>
+                    <span>{u?.role && u.role > 1 ? 'Ylläpitäjä' : ''}</span>
+                    {user._id !== u._id && (
+                      <button
+                        className='danger smaller'
+                        onClick={() => {
+                          if (window.confirm(`Poistetaanko ${u.name}?`))
+                            dispatch(removeUser(u._id))
+                              .then(() =>
+                                dispatch(notify('Käyttäjä poistettu', false, 5))
+                              )
+                              .then(() => dispatch(initializeUsers()))
+                              .catch((e) => {
+                                console.error(e)
+                                dispatch(
+                                  notify(`Virhe: ${e.response.data.message}`, true, 8)
+                                )
+                              })
+                        }}
+                      >
+                        <span>Poista</span>
+                      </button>
+                    )}
+                  </li>
                 ))}
-              </tbody>
-            </table>
+              </ul>
+            )}
 
             <h3>Omat tiedot</h3>
             <h4>Salasanan vaihto</h4>

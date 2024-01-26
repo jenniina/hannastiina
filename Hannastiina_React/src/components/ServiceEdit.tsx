@@ -4,8 +4,6 @@ import Accordion from './Accordion'
 import Select, { SelectOption } from './Select'
 import {
   fetchServices,
-  // searchPriceRange,
-  // fetchServiceByName,
   addService,
   updateService,
   deleteService,
@@ -70,9 +68,6 @@ const ServiceEdit = ({ formatDuration, handleScrollToElement }: Props) => {
   const onDrop = async (id: number, category: string, targetIndex: number) => {
     handleUpdate(id, category, targetIndex)
       .then(() => dispatch(fetchServices()))
-      // .then((fetchedServices) => {
-      //   setFilteredServices(fetchedServices.payload as IService[])
-      // })
       .catch((error) => console.error(error))
   }
 
@@ -125,7 +120,7 @@ const ServiceEdit = ({ formatDuration, handleScrollToElement }: Props) => {
     }
     dispatch(addService(newService))
       .then(() => {
-        reset()
+        resetPlus()
         dispatch(fetchServices())
       })
       .then(() => dispatch(notify('Palvelu lisätty', false, 5)))
@@ -159,31 +154,12 @@ const ServiceEdit = ({ formatDuration, handleScrollToElement }: Props) => {
     setPrice('')
     setDuration(0)
     setDescription('')
+  }
+
+  const resetPlus = () => {
+    reset()
     setAddOpen(false)
   }
-
-  const resetAdd = () => {
-    setEditOpen(false)
-    setEditId(-1)
-    setName('')
-    setCategory(options[0])
-    setDetail('')
-    setPrice('')
-    setDuration(0)
-    setDescription('')
-  }
-
-  // const handleSearchServiceByName = (event: FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault()
-  //   dispatch(fetchServiceByName(searchName))
-  // }
-
-  // const handleSearchServiceByPrice = (event: FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault()
-  //   dispatch(searchPriceRange({ min: min, max: max })).then((response) => {
-  //     console.error(response)
-  //   })
-  // }
 
   const handleSearchServiceByPrice = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -224,7 +200,7 @@ const ServiceEdit = ({ formatDuration, handleScrollToElement }: Props) => {
     }
     dispatch(updateService({ id: editId, newObject: editedService }))
       .then(() => {
-        reset()
+        resetPlus()
         dispatch(fetchServices())
       })
       .then(() => dispatch(notify('Palvelu päivitetty', false, 5)))
@@ -317,7 +293,7 @@ const ServiceEdit = ({ formatDuration, handleScrollToElement }: Props) => {
             className='add-service'
             id='add-service'
             onClick={() => {
-              resetAdd()
+              reset()
             }}
             isOpen={addOpen}
             setIsFormOpen={setAddOpen}

@@ -346,8 +346,8 @@ button.smaller {
   width: 100%;
   display: flex;
   flex-flow: row wrap;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
+  justify-content: flex-start;
   gap: 1em;
   margin: 0 auto;
 }
@@ -432,7 +432,7 @@ footer address {
 }
 
 #root .pink {
-  background: var(--gradient-side);
+  background: var(--pink-light);
 }
 
 main {
@@ -890,6 +890,9 @@ div.edit ul.palvelut > li.empty {
   }
 }
 @media (min-width: 600px) {
+  #root .pink {
+    background: var(--gradient-side);
+  }
   main > div.inner-container {
     width: 100%;
     max-width: var(--max-width);
