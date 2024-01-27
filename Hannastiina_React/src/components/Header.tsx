@@ -4,9 +4,9 @@ import img from '../assets/Hannastiina.png'
 import { IUser, RefObject } from '../types'
 import useEnterDirection from '../hooks/useEnterDirection'
 import styles from './css/Header.module.css'
-import { useSessionStorage } from '../hooks/useStorage'
-import { FC, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { FC, createRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useRandomMinMax from '../hooks/useRandomMinMax'
+import useIsWithinBounds from '../hooks/useIsWithinBounds'
 
 interface Props {
   user: IUser | null
@@ -28,17 +28,17 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
   const color = 'white'
   const initialAmount = 8
   const [amount, setAmount] = useState<number>(initialAmount)
-  const [values, setValues] = useSessionStorage<itemProps[]>('HannastiinaHeroArray', [
-    { i: 1, e: 3.274, size: 10, color: color },
+  const [values, setValues] = useState<itemProps[]>([
+    { i: 1, e: 9.274, size: 10, color: color },
     { i: 2, e: 5.044, size: 11, color: color },
-    { i: 3, e: 1.886, size: 9, color: color },
+    { i: 3, e: 7.886, size: 9, color: color },
     { i: 4, e: 4.966, size: 6, color: color },
-    { i: 5, e: 1.621, size: 9, color: color },
-    { i: 6, e: 3.489, size: 11, color: color },
-    { i: 7, e: 3.79, size: 11, color: color },
+    { i: 5, e: 6.621, size: 9, color: color },
+    { i: 6, e: 8.489, size: 6, color: color },
+    { i: 7, e: 7.79, size: 11, color: color },
     { i: 8, e: 8.365, size: 4, color: color },
-    { i: 9, e: 7.846, size: 11, color: color },
-    { i: 10, e: 4.121, size: 11, color: color },
+    { i: 9, e: 7.846, size: 6, color: color },
+    { i: 10, e: 4.121, size: 8, color: color },
   ])
 
   const isTouchDevice = () => {
@@ -53,28 +53,19 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
 
   const touchDevice = isTouchDevice()
 
-  const movingItem = (e: React.PointerEvent<HTMLElement>) => {
-    const target = e.target as HTMLElement
-    const targetRight = window.getComputedStyle(target).getPropertyValue('right')
-    const targetTop = window.getComputedStyle(target).getPropertyValue('top')
-    const from = useEnterDirection(e)
-    switch (from) {
-      case 'top':
-        target.style.top = `${parseFloat(targetTop) + 20}px`
-        break
-      case 'right':
-        target.style.right = `${parseFloat(targetRight) + 20}px`
-        break
-      case 'bottom':
-        target.style.top = `${parseFloat(targetTop) - 20}px`
-        break
-      case 'left':
-        target.style.right = `${parseFloat(targetRight) - 20}px`
-        break
-      default:
-        break
+  const ulRef = useRef() as RefObject<HTMLUListElement>
+  const itemRefs = useRef<React.RefObject<HTMLLIElement>[]>([])
+  const targetRef = useRef<HTMLElement | null>(null)
+  const [currentTarget, setCurrentTarget] = useState<HTMLElement | null>(null)
+
+  const isWithinBounds = useIsWithinBounds(targetRef, ulRef)
+
+  useEffect(() => {
+    if (currentTarget && !isWithinBounds) {
+      currentTarget.tabIndex = -1
     }
-  }
+  }, [isWithinBounds, currentTarget])
+
   const removeWithTouch = (e: TouchEvent) => {
     e.preventDefault()
     ;(e.target as HTMLElement).classList.add(styles.exitItem)
@@ -113,6 +104,17 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
       : setAmount(initialAmount)
   }
 
+  const handleFocus = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    id: string
+  ) => {
+    e.preventDefault()
+    const anchor: HTMLButtonElement | null = document.querySelector(`#${id}`)
+    if (anchor) {
+      anchor.focus()
+    }
+  }
+
   const setupItems: itemProps[] = useMemo(() => {
     for (let i: number = 0; i <= amount; i++) {
       const item: itemProps = {
@@ -136,7 +138,45 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
     windowWidth < 600 ? setAmount(4) : ''
   }, [windowWidth])
 
-  const ulRef = useRef() as RefObject<HTMLUListElement>
+  const movingItem = (e: React.PointerEvent<HTMLElement>) => {
+    const target = e.target as HTMLElement
+    targetRef.current = target
+    setCurrentTarget(target)
+    const targetRight = window.getComputedStyle(target).getPropertyValue('right')
+    const targetTop = window.getComputedStyle(target).getPropertyValue('top')
+    const from = useEnterDirection(e)
+    switch (from) {
+      case 'top':
+        target.style.top = `${parseFloat(targetTop) + 20}px`
+        break
+      case 'right':
+        target.style.right = `${parseFloat(targetRight) + 20}px`
+        break
+      case 'bottom':
+        target.style.top = `${parseFloat(targetTop) - 20}px`
+        break
+      case 'left':
+        target.style.right = `${parseFloat(targetRight) - 20}px`
+        break
+      default:
+        break
+    }
+  }
+
+  const [viewportChanged, setViewportChanged] = useState(false)
+
+  //To stop the light effects from animating to their new positions when the viewport is resized:
+  useEffect(() => {
+    const handleResize = () => {
+      setViewportChanged(true)
+      setTimeout(() => setViewportChanged(false), 300)
+    }
+
+    window.addEventListener('resize', handleResize)
+
+    // Clean up the event listener when the component unmounts
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
 
   const ItemComponent: FC<{ array: itemProps[] }> = useCallback(
     ({ array }) => {
@@ -148,18 +188,20 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
             role='listbox'
             aria-labelledby={`description`}
             aria-activedescendant=''
-            className={`${styles.herocontent}`}
+            className={`${styles.herocontent} ${viewportChanged ? 'disable' : ''}`}
           >
             {array.map((item, index: number) => {
               const style: React.CSSProperties = {
                 position: 'absolute',
                 top:
                   windowWidth > 600
-                    ? `clamp(10px, calc(-50px + 1.5vh * ${item.e} * ${item.e / 2} 
-                    / ${item.i / 2}), 50vh)`
-                    : `clamp(10px, calc(-50px + 1.5vw * ${item.e} * ${
-                        item.e / 2
-                      }), 50vh)`,
+                    ? `clamp(10px, calc(-50px + 1.5vh * ${item.e} * ${item.e / 3}
+                    / ${item.i / 2}), ${
+                        ulRef.current ? ulRef.current?.offsetHeight + 'px' : '50vh'
+                      })`
+                    : `clamp(10px, calc(-50px + 1vw * ${item.e} * ${item.e / 3}), ${
+                        ulRef.current ? ulRef.current?.offsetHeight + 'px' : '300px'
+                      })`,
                 right:
                   windowWidth > 600
                     ? `clamp(10px, calc(${item.i / 1.2} * 1.5vw * ${item.e}), 95vw)`
@@ -173,6 +215,7 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
                   windowWidth < windowHeight ? `${item.size}vh` : `${item.size}vw`,
                 width: windowWidth < windowHeight ? `${item.size}vh` : `${item.size}vw`,
                 height: windowWidth < windowHeight ? `${item.size}vh` : `${item.size}vw`,
+
                 ['--s2' as string]: item.size,
                 maxHeight: '200px',
                 maxWidth: '200px',
@@ -181,16 +224,21 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
                 borderRadius: '65% 65% 70% 60% / 60% 70% 60% 65%',
               }
 
+              if (!itemRefs.current[index]) {
+                itemRefs.current[index] = createRef()
+              }
+
+              const isWithinBounds = useIsWithinBounds(itemRefs.current[index], ulRef)
+
               return (
                 <li
                   key={`${index}`}
-                  className={`${styles.item} ${
-                    windowHeight < windowWidth ? styles.wide : styles.tall
-                  }`}
+                  ref={itemRefs.current[index]}
+                  className={`${styles.item}`}
                   style={style}
                   id={`item${index + 1}`}
                   role={'option'}
-                  tabIndex={0}
+                  tabIndex={isWithinBounds ? 0 : -1}
                   onFocus={(e) => {
                     ulRef.current?.setAttribute('aria-activedescendant', `${e.target.id}`)
                   }}
@@ -221,7 +269,8 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
                   }}
                 >
                   <span>
-                    <label className='scr'>valopallo {index + 1}</label>
+                    &nbsp;
+                    <span className='scr'>valopallo {index + 1}</span>
                   </span>
                 </li>
               )
@@ -230,17 +279,47 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
         )
       }
     },
-    [values, amount]
+    [values, amount, windowWidth, windowHeight, viewportChanged]
   )
 
   const resetButton = useRef() as RefObject<HTMLButtonElement>
+  const imgRef = useRef() as RefObject<HTMLDivElement>
 
   return (
     <header>
-      <nav id='nav' className={`pink ${styles.pink}`}>
+      <nav className={`skip-links ${styles['skip-links']}`}>
+        <ul>
+          <li>
+            <button
+              onClick={(e) => handleScrollToElement(e, 'main')}
+              className={`skip-link ${styles['skip-link']}`}
+            >
+              Siirry sisältöön
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={(e) => handleFocus(e, 'palvelut-link')}
+              className={`skip-link ${styles['skip-link']}`}
+            >
+              Siirry päävalikkoon
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={(e) => handleScrollToElement(e, 'footer')}
+              className={`skip-link ${styles['skip-link']}`}
+            >
+              Siirry alatunnisteeseen
+            </button>
+          </li>
+        </ul>
+      </nav>
+      <nav id='nav' className={`main ${styles.main} pink ${styles.pink}`}>
         <ul>
           <li className={styles.services}>
             <button
+              id='palvelut-link'
               onClick={(e) => {
                 handleScrollToElement(e, 'palvelut')
               }}
@@ -269,8 +348,11 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
           </li>
         </ul>
       </nav>
-      <div className={styles.img}>
+      <div ref={imgRef} className={styles.img}>
         <img className={styles.bg} src={img} alt='tausta' aria-hidden='true' />
+
+        <ItemComponent array={setupItems} />
+
         <div className={styles.bottom}>
           <button
             data-instructions='Vinkki: klikkaa valopalloja poistaaksesi ne'
@@ -282,7 +364,6 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
             <span>Palauta</span>
           </button>
         </div>
-        <ItemComponent array={setupItems} />
       </div>
 
       <div className={`pink filler ${styles.pink} ${styles.filler}`}>

@@ -865,9 +865,7 @@ section.card > ol {
 .top-links button span.around {
   transform: rotate(180deg);
 }
-div.edit ul.palvelut > li {
-  flex-flow: row nowrap;
-}
+
 div.edit ul.palvelut > li[draggable='true'] {
   cursor: -webkit-grab;
   cursor: grab;

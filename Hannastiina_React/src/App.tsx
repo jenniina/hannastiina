@@ -68,7 +68,7 @@ function App() {
         windowWidth={windowWidth}
         windowHeight={windowHeight}
       />
-      <main>
+      <main id='main'>
         <div className='inner-container'>
           {user && (
             <>
