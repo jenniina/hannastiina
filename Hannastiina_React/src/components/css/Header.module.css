@@ -324,9 +324,9 @@ header img.fg {
     max-width: 1800px;
   }
 }
-@media (max-width: 600px) {
+@media (max-width: 400px) {
   /* Header image zoom */
-  header img {
+  header .img img {
     width: 216%;
     object-fit: cover;
     object-position: center;
