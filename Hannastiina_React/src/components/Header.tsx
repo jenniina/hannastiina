@@ -195,11 +195,15 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
                 position: 'absolute',
                 top:
                   windowWidth > 600
-                    ? `clamp(10px, calc(-50px + 1.5vh * ${item.e} * ${item.e / 3}
-                    / ${item.i / 2}), ${
-                        ulRef.current ? ulRef.current?.offsetHeight + 'px' : '50vh'
+                    ? `clamp(10px, calc(-60px + 3vh * ${item.e}
+                    / ${item.i / 3}), ${
+                        ulRef.current ? ulRef.current?.offsetHeight - 20 + 'px' : '50vh'
                       })`
-                    : `clamp(10px, calc(-50px + 1vw * ${item.e} * ${item.e / 3}), ${
+                    : windowWidth > 400
+                    ? `clamp(10px, calc(-50px + 1vw * ${item.e * 2.5}), ${
+                        ulRef.current ? ulRef.current?.offsetHeight + 'px' : '300px'
+                      })`
+                    : `clamp(10px, calc(-50px + 2vw * ${item.e * 2.5}), ${
                         ulRef.current ? ulRef.current?.offsetHeight + 'px' : '300px'
                       })`,
                 right:
@@ -269,7 +273,7 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
                   }}
                 >
                   <span>
-                    <span className='scr'>valo {index + 1}</span>
+                    <span className='scr'>heijastus {index + 1}</span>
                   </span>
                 </li>
               )
@@ -351,7 +355,7 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
 
         <div className={styles.bottom}>
           <button
-            data-instructions='Vinkki: klikkaa valoja poistaaksesi ne'
+            data-instructions='Vinkki: klikkaa valoheijastuksia poistaaksesi ne'
             className={`reset ${styles.reset}`}
             ref={resetButton}
             type='button'

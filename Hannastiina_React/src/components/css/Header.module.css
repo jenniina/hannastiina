@@ -242,6 +242,7 @@ header img.fg {
     filter: blur(10px);
     opacity: 0.6;
     pointer-events: all;
+    cursor: pointer;
   }
   .herocontent .item.disable {
     transition-property: none;
