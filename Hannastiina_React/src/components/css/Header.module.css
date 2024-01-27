@@ -291,6 +291,7 @@ header img.fg {
     transition-timing-function: ease-in-out;
     transition-duration: 500ms;
     transition-delay: 0s;
+    pointer-events: none;
   }
   .bottom button:hover::after {
     opacity: 1;

@@ -57,7 +57,9 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
   const itemRefs = useRef<React.RefObject<HTMLLIElement>[]>([])
   const targetRef = useRef<HTMLElement | null>(null)
   const [currentTarget, setCurrentTarget] = useState<HTMLElement | null>(null)
-
+  const resetButton = useRef() as RefObject<HTMLButtonElement>
+  const imgRef = useRef() as RefObject<HTMLDivElement>
+  const [viewportChanged, setViewportChanged] = useState(false)
   const isWithinBounds = useIsWithinBounds(targetRef, ulRef)
 
   useEffect(() => {
@@ -163,8 +165,6 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
     }
   }
 
-  const [viewportChanged, setViewportChanged] = useState(false)
-
   //To stop the light effects from animating to their new positions when the viewport is resized:
   useEffect(() => {
     const handleResize = () => {
@@ -269,8 +269,7 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
                   }}
                 >
                   <span>
-                    &nbsp;
-                    <span className='scr'>valopallo {index + 1}</span>
+                    <span className='scr'>valo {index + 1}</span>
                   </span>
                 </li>
               )
@@ -281,9 +280,6 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
     },
     [values, amount, windowWidth, windowHeight, viewportChanged]
   )
-
-  const resetButton = useRef() as RefObject<HTMLButtonElement>
-  const imgRef = useRef() as RefObject<HTMLDivElement>
 
   return (
     <header>
@@ -355,7 +351,7 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
 
         <div className={styles.bottom}>
           <button
-            data-instructions='Vinkki: klikkaa valopalloja poistaaksesi ne'
+            data-instructions='Vinkki: klikkaa valoja poistaaksesi ne'
             className={`reset ${styles.reset}`}
             ref={resetButton}
             type='button'
