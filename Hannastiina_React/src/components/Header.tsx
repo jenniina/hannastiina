@@ -68,33 +68,6 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
     }
   }, [isWithinBounds, currentTarget])
 
-  const removeWithTouch = (e: TouchEvent) => {
-    e.preventDefault()
-    ;(e.target as HTMLElement).classList.add(styles.exitItem)
-    setTimeout(() => {
-      ;(e.target as HTMLElement).remove()
-    }, 1000)
-  }
-
-  const removeItem = (element: HTMLElement) => {
-    if (!touchDevice) {
-      //if not a touch device, remove item
-      element.classList.add(styles.exitItem)
-      setTimeout(() => {
-        element.remove()
-      }, 1000)
-    } else {
-      //if a touch device, activate animation on tap
-      element.classList.add(styles.active)
-      element.addEventListener('blur', () => {
-        element.classList.remove(styles.active)
-        element.removeEventListener('touchend', removeWithTouch)
-      })
-      setTimeout(() => {
-        element.addEventListener('touchend', removeWithTouch) //remove item on second tap
-      }, 100)
-    }
-  }
   const handleReset = (e: { preventDefault: () => void }) => {
     e.preventDefault()
     windowWidth < 600 && amount === 4
@@ -178,6 +151,20 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  const removeItem = (element: HTMLElement) => {
+    if (!touchDevice) {
+      element.classList.add(styles.exitItem)
+      setTimeout(() => {
+        element.remove()
+      }, 1000)
+    } else {
+      element.classList.add(styles.exitItemTouch)
+      setTimeout(() => {
+        element.remove()
+      }, 2000)
+    }
+  }
+
   const ItemComponent: FC<{ array: itemProps[] }> = useCallback(
     ({ array }) => {
       {
@@ -194,9 +181,12 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
               const style: React.CSSProperties = {
                 position: 'absolute',
                 top:
-                  windowWidth > 600
-                    ? `clamp(10px, calc(-60px + 3vh * ${item.e}
-                    / ${item.i / 3}), ${
+                  windowWidth > 1000
+                    ? `clamp(10px, calc(-150px + 3vh * ${item.e * 2}), ${
+                        ulRef.current ? ulRef.current?.offsetHeight - 20 + 'px' : '90vh'
+                      })`
+                    : windowWidth > 600
+                    ? `clamp(10px, calc(-60px + 3vh * ${item.e}), ${
                         ulRef.current ? ulRef.current?.offsetHeight - 20 + 'px' : '50vh'
                       })`
                     : windowWidth > 400

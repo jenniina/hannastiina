@@ -153,9 +153,15 @@ header img.fg {
 }
 
 .exitItem {
+  -webkit-animation: shrinkAway 0.3s ease-in-out forwards;
   animation: shrinkAway 0.3s ease-in-out forwards;
+  pointer-events: none;
 }
-.active {
+
+.exitItemTouch {
+  -webkit-animation: shrinkAwayTouch 0.6s ease-in-out forwards;
+  animation: shrinkAwayTouch 0.6s ease-in-out forwards;
+  pointer-events: none;
 }
 
 .skip-links {
@@ -241,8 +247,15 @@ header img.fg {
     -ms-filter: blur(10px);
     filter: blur(10px);
     opacity: 0.6;
-    pointer-events: all;
+    pointer-events: auto;
     cursor: pointer;
+    user-select: none;
+  }
+  .herocontent .item:focus,
+  .herocontent .item:focus-visible {
+    outline: none;
+    pointer-events: none;
+    user-select: none;
   }
   .herocontent .item.disable {
     transition-property: none;
@@ -338,8 +351,21 @@ header img.fg {
   0% {
     transform: scale(1);
   }
-  10% {
-    transform: scale(1.1);
+  15% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+}
+@keyframes shrinkAwayTouch {
+  0% {
+    transform: scale(1);
+  }
+  20% {
+    transform: scale(2);
+    opacity: 0.9;
   }
   100% {
     transform: scale(0);
