@@ -183,11 +183,15 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
                 top:
                   windowWidth > 1000
                     ? `clamp(10px, calc(-150px + 3vh * ${item.e * 2}), ${
-                        ulRef.current ? ulRef.current?.offsetHeight - 20 + 'px' : '90vh'
+                        ulRef.current && ulRef.current?.offsetHeight > 200
+                          ? ulRef.current?.offsetHeight - 20 + 'px'
+                          : '90vh'
                       })`
                     : windowWidth > 600
                     ? `clamp(10px, calc(-60px + 3vh * ${item.e}), ${
-                        ulRef.current ? ulRef.current?.offsetHeight - 20 + 'px' : '50vh'
+                        ulRef.current && ulRef.current?.offsetHeight > 200
+                          ? ulRef.current?.offsetHeight - 20 + 'px'
+                          : '30vh'
                       })`
                     : windowWidth > 400
                     ? `clamp(10px, calc(-50px + 1vw * ${item.e * 2.5}), ${

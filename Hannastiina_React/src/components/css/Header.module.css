@@ -155,13 +155,28 @@ header img.fg {
 .exitItem {
   -webkit-animation: shrinkAway 0.3s ease-in-out forwards;
   animation: shrinkAway 0.3s ease-in-out forwards;
+  outline: none;
   pointer-events: none;
+  user-select: none;
 }
 
 .exitItemTouch {
   -webkit-animation: shrinkAwayTouch 0.6s ease-in-out forwards;
   animation: shrinkAwayTouch 0.6s ease-in-out forwards;
+  outline: none;
   pointer-events: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.herocontent .item {
+  -webkit-tap-highlight-color: transparent;
+}
+.herocontent .item:focus,
+.herocontent .item:focus-visible {
+  outline: none;
+  pointer-events: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .skip-links {
@@ -249,12 +264,6 @@ header img.fg {
     opacity: 0.6;
     pointer-events: auto;
     cursor: pointer;
-    user-select: none;
-  }
-  .herocontent .item:focus,
-  .herocontent .item:focus-visible {
-    outline: none;
-    pointer-events: none;
     user-select: none;
   }
   .herocontent .item.disable {
