@@ -20,7 +20,7 @@ export const fetchCategories = createAsyncThunk(
 
 export const addCategory = createAsyncThunk(
   'categories/addCategory',
-  async (category: string) => {
+  async (category: { kategoria: string; viimeisinMuokkaus: number }) => {
     const response = await categoryService.addCategory(category)
     return response
   }

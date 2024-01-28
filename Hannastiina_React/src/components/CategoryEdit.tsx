@@ -225,7 +225,12 @@ const CategoryEdit = ({ user }: Props) => {
               dispatch(notify(`Kategoria ${newName} on jo olemassa`, true, 4))
               return
             } else {
-              dispatch(addCategory(newName?.toLowerCase()))
+              dispatch(
+                addCategory({
+                  kategoria: newName?.toLowerCase(),
+                  viimeisinMuokkaus: user?.id as number,
+                })
+              )
                 .then(() => {
                   dispatch(fetchCategories())
                   setNewName('')

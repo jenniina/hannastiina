@@ -15,8 +15,11 @@ const getAll = async (): Promise<ICategory[]> => {
   return response.data
 }
 
-const addCategory = async (newObject: string): Promise<ICategory> => {
-  const response = await axios.post(baseUrl, { kategoria: newObject }, getConfig())
+const addCategory = async (newObject: {
+  kategoria: string
+  viimeisinMuokkaus: number
+}): Promise<ICategory> => {
+  const response = await axios.post(baseUrl, newObject, getConfig())
   return response.data
 }
 
