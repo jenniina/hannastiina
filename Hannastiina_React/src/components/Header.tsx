@@ -267,7 +267,7 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
                   }}
                 >
                   <span>
-                    <span className='scr'>heijastus {index + 1}</span>
+                    <span className='scr'>valo {index + 1}</span>
                   </span>
                 </li>
               )
@@ -349,7 +349,7 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
 
         <div className={styles.bottom}>
           <button
-            data-instructions='Vinkki: klikkaa valoheijastuksia poistaaksesi ne'
+            data-instructions='Vinkki: klikkaa valoja poistaaksesi ne'
             className={`reset ${styles.reset}`}
             ref={resetButton}
             type='button'
