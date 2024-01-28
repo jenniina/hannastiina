@@ -33,7 +33,6 @@ const Intro = ({ user }: Props) => {
 
   const handleUpdateIntro = async (event: any) => {
     event.preventDefault()
-    event.target.intro.value = ''
     dispatch(
       updateIntro({
         id: intro?.esittely?.[0]?.id as number,
@@ -42,6 +41,10 @@ const Intro = ({ user }: Props) => {
     )
       .then(() => dispatch(fetchIntro()))
       .then(() => dispatch(notify('Intro päivitetty', false, 5)))
+      .catch((e) => {
+        console.error(e)
+        dispatch(notify(`Virhe! ${e.response.data.message ?? ''}`, true, 8))
+      })
   }
 
   return (
@@ -59,7 +62,9 @@ const Intro = ({ user }: Props) => {
         <div className='edit'>
           <form onSubmit={handleUpdateIntro}>
             <label htmlFor='intro'>
-              {teksti[0] !== '' ? 'Muokkaa esittelytekstiä:' : 'Lisää esittelyteksti:'}
+              {teksti[0].trim() !== ''
+                ? 'Muokkaa esittelytekstiä:'
+                : 'Lisää esittelyteksti:'}
             </label>
             <textarea
               name='intro'

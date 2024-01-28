@@ -133,7 +133,10 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
         dispatch(fetchServices())
       })
       .then(() => dispatch(notify('Palvelu lisätty', false, 5)))
-      .catch((error) => console.error(error))
+      .catch((error) => {
+        console.error(error)
+        dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 5))
+      })
   }
 
   const mapCategoriesToOptions = useCallback(
@@ -194,7 +197,10 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
       dispatch(deleteService(id))
         .then(() => dispatch(fetchServices()))
         .then(() => dispatch(notify('Palvelu poistettu', false, 5)))
-        .catch((error) => console.error(error))
+        .catch((error) => {
+          console.error(error)
+          dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 5))
+        })
   }
 
   const handleEditService = (event: FormEvent<HTMLFormElement>) => {
@@ -214,7 +220,10 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
         dispatch(fetchServices())
       })
       .then(() => dispatch(notify('Palvelu päivitetty', false, 5)))
-      .catch((error) => console.error(error))
+      .catch((error) => {
+        console.error(error)
+        dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 5))
+      })
   }
 
   useEffect(() => {
@@ -377,7 +386,7 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
         <p>
           Vedä ja pudota palvelut haluamaasi järjestykseen kategoriansa sisällä. Uusi
           järjestys tallentuu automaattisesti. Paina palvelun "Muokkaa" painiketta
-          halutessasi vaihtaa sen kategoriaa tai muita tietoja.
+          halutessasi vaihtaa sen kategoriaa tai muuttaa muita tietoja.
         </p>
         <ul className='palvelulista' id='palvelulista'>
           {loading ? (

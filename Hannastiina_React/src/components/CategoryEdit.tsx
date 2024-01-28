@@ -214,7 +214,7 @@ const CategoryEdit = ({ user }: Props) => {
         <form
           onSubmit={(e) => {
             e.preventDefault()
-            if (newName === '') {
+            if (newName.trim() === '') {
               dispatch(notify(`Kategorian nimi ei voi olla tyhjä`, true, 4))
               return
             } else if (
@@ -238,13 +238,7 @@ const CategoryEdit = ({ user }: Props) => {
                 .then(() => dispatch(notify(`Kategoria lisätty onnistuneesti`, false, 4)))
                 .catch((error) => {
                   console.error(error)
-                  dispatch(
-                    notify(
-                      `Kategorian lisäämisessä tapahtui virhe! ${error.message}`,
-                      true,
-                      4
-                    )
-                  )
+                  dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 4))
                 })
             }
           }}
@@ -265,27 +259,33 @@ const CategoryEdit = ({ user }: Props) => {
         <h3>Muokkaa kategorian nimeä</h3>
         <form
           onSubmit={(e) => {
-            e.preventDefault()
-            dispatch(
-              updateCategory({
-                id: categoryObject?.id as number,
-                category: categoryObject as ICategory,
-              })
-            )
-              .then(() => dispatch(fetchCategories()))
-              .then(() => {
-                setCategory(options[0])
-                setName('')
-              })
-              .then(() =>
-                dispatch(notify(`Kategorian nimi muutettu onnistuneesti`, false, 4))
+            if (categoryObject?.kategoria?.toLowerCase() === name?.toLowerCase()) {
+              dispatch(notify(`Kategorian nimi on jo ${name}`, true, 4))
+              return
+            } else if (categoryObject?.kategoria?.trim() === '') {
+              dispatch(notify(`Kategorian nimi ei voi olla tyhjä`, true, 4))
+              return
+            } else {
+              e.preventDefault()
+              dispatch(
+                updateCategory({
+                  id: categoryObject?.id as number,
+                  category: categoryObject as ICategory,
+                })
               )
-              .catch((error) => {
-                console.error(error)
-                dispatch(
-                  notify(`Kategorian nimen muuttamisessa tapahtui virhe!`, true, 4)
+                .then(() => dispatch(fetchCategories()))
+                .then(() => {
+                  setCategory(options[0])
+                  setName('')
+                })
+                .then(() =>
+                  dispatch(notify(`Kategorian nimi muutettu onnistuneesti`, false, 4))
                 )
-              })
+                .catch((error) => {
+                  console.error(error)
+                  dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 4))
+                })
+            }
           }}
         >
           {categories?.length > 0 && (

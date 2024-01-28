@@ -20,7 +20,8 @@ const ServiceSingle: React.FC<IServiceSingleProps> = ({
         <tr>
           <td className='max-content'>
             <span>
-              {service.nimi}: {service.tarkennus}
+              {service.tarkennus ? `${service.nimi}:` : `${service.nimi}`}{' '}
+              {service.tarkennus}
             </span>
           </td>
           <td>
