@@ -1,7 +1,6 @@
 import { useSelector } from 'react-redux'
 import { useAppDispatch } from '../hooks/useAppDispatch'
 import { fetchServices } from '../reducers/serviceReducer'
-
 import { FormEvent, MouseEvent, useEffect, useState } from 'react'
 import { IService, IReducers, ICategoryState, ICategoryItems } from '../types'
 import { fetchCategories } from '../reducers/categoryReducer'
@@ -84,7 +83,6 @@ const ServiceList = ({ formatDuration, windowWidth }: Props) => {
     setMax(100)
     setFilterBy('')
     dispatch(fetchServices()).catch((error) => console.error(error))
-    setFilterBy('')
 
     const anchor = document.querySelector(`#palvelulista`)
     if (anchor) {
