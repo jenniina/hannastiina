@@ -255,6 +255,7 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
       // Find all Palvelu and Kategoria instances that were last edited by the user
       const palvelut = await Palvelu.findAll({ where: { viimeisinMuokkaus: id } })
       const kategoriat = await Kategoria.findAll({ where: { viimeisinMuokkaus: id } })
+      const esittelyt = await Esittely.findAll({ where: { viimeisinMuokkaus: id } }) // New
 
       // Update the viimeisinMuokkaus field to 7
       for (const palvelu of palvelut) {
@@ -264,6 +265,11 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
       for (const kategoria of kategoriat) {
         kategoria.viimeisinMuokkaus = 7
         await kategoria.save()
+      }
+      for (const esittely of esittelyt) {
+        // New
+        esittely.viimeisinMuokkaus = 7
+        await esittely.save()
       }
 
       await user.destroy()
