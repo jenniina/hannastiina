@@ -297,9 +297,10 @@ const CategoryEdit = ({ user }: Props) => {
                 onChange={(o) => {
                   setCategory(o as SelectOption)
                   setName(o?.label?.toLowerCase() as string)
-                  setCategoryObject(
-                    categories?.find((c) => c?.id === o?.value) as ICategory
-                  )
+                  setCategoryObject({
+                    ...(categories?.find((c) => c?.id === o?.value) as ICategory),
+                    viimeisinMuokkaus: user?.id as number,
+                  })
                 }}
                 options={options}
                 instructions='Valitse kategoria'
@@ -347,9 +348,10 @@ const CategoryEdit = ({ user }: Props) => {
                 value={category_}
                 onChange={(o) => {
                   setCategory(o as SelectOption)
-                  setCategoryObject(
-                    categories?.find((c) => c?.id === o?.value) as ICategory
-                  )
+                  setCategoryObject({
+                    ...(categories?.find((c) => c?.id === o?.value) as ICategory),
+                    viimeisinMuokkaus: user?.id as number,
+                  })
                 }}
                 options={emptyOptions}
                 instructions='Valitse kategoria'
