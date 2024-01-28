@@ -1,7 +1,7 @@
 import { DataTypes, Model } from 'sequelize'
 import sequelize from '../config/database'
 import Kategoria from './kategoria'
-import Jarjestys from './jarjestys'
+import Kayttaja from './user'
 
 class Palvelu extends Model {
   public id!: number
@@ -11,6 +11,7 @@ class Palvelu extends Model {
   public hinta!: number
   public kesto!: number
   public kuvaus!: string
+  public viimeisinMuokkaus!: number
 }
 
 Palvelu.init(
@@ -55,6 +56,13 @@ Palvelu.init(
     kuvaus: {
       type: DataTypes.TEXT,
       allowNull: true,
+    },
+    viimeisinMuokkaus: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: Kayttaja,
+        key: 'id',
+      },
     },
   },
   {

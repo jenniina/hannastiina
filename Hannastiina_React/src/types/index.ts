@@ -22,6 +22,7 @@ export interface ICategory {
   id?: number
   kategoria: string
   orderIndex: number
+  viimeisinMuokkaus: number
 }
 export interface ICategoryState {
   categories: ICategory[]
@@ -36,6 +37,7 @@ export interface IService {
   hinta: number
   kesto: number
   kuvaus: string
+  viimeisinMuokkaus: number
 }
 export interface IServiceState {
   services: IService[]
@@ -51,6 +53,7 @@ export interface IIntroState {
 export interface IIntro {
   id?: number
   esittely: string
+  viimeisinMuokkaus: number
 }
 
 export interface IClosestItem {
@@ -62,7 +65,7 @@ export interface ICategoryItems {
 }
 
 export interface IUser {
-  id?: string
+  id?: number
   _id?: string
   username: string
   name?: string

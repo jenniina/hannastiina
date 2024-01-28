@@ -11,12 +11,20 @@ import {
 import { fetchCategories } from '../reducers/categoryReducer'
 import { fetchOrderBy } from '../reducers/orderByReducer'
 import { ChangeEvent, FormEvent, useState, useEffect, useCallback } from 'react'
-import { IService, IReducers, IClosestItem, ICategoryItems, ICategory } from '../types'
+import {
+  IService,
+  IReducers,
+  IClosestItem,
+  ICategoryItems,
+  ICategory,
+  IUser,
+} from '../types'
 import { useDragAndDrop } from '../hooks/useDragAndDrop'
 import ServiceSingleEdit from './ServiceSingleEdit'
 import { notify } from '../reducers/notificationReducer'
 
 interface Props {
+  user: IUser
   formatDuration: (minutes: number) => string
   handleScrollToElement: (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -24,7 +32,7 @@ interface Props {
   ) => void
 }
 
-const ServiceEdit = ({ formatDuration, handleScrollToElement }: Props) => {
+const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => {
   const dispatch = useAppDispatch()
   const { services, loading, error } = useSelector((state: IReducers) => state.services)
   const [filteredServices, setFilteredServices] = useState<IService[] | undefined>(
@@ -117,6 +125,7 @@ const ServiceEdit = ({ formatDuration, handleScrollToElement }: Props) => {
       hinta: Number(price.replace(',', '.')),
       kesto: duration,
       kuvaus: description,
+      viimeisinMuokkaus: user?.id as number,
     }
     dispatch(addService(newService))
       .then(() => {
@@ -197,6 +206,7 @@ const ServiceEdit = ({ formatDuration, handleScrollToElement }: Props) => {
       hinta: Number(price.replace(',', '.')),
       kesto: duration,
       kuvaus: description,
+      viimeisinMuokkaus: user?.id as number,
     }
     dispatch(updateService({ id: editId, newObject: editedService }))
       .then(() => {

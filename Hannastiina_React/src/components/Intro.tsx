@@ -35,7 +35,10 @@ const Intro = ({ user }: Props) => {
     event.preventDefault()
     event.target.intro.value = ''
     dispatch(
-      updateIntro({ id: intro?.esittely?.[0]?.id as number, newObject: introText })
+      updateIntro({
+        id: intro?.esittely?.[0]?.id as number,
+        newObject: { esittely: introText, viimeisinMuokkaus: user?.id as number },
+      })
     )
       .then(() => dispatch(fetchIntro()))
       .then(() => dispatch(notify('Intro päivitetty', false, 5)))

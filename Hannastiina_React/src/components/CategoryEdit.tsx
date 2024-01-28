@@ -10,11 +10,15 @@ import {
 } from '../reducers/categoryReducer'
 import { fetchOrderBy } from '../reducers/orderByReducer'
 import { useState, useEffect, useCallback } from 'react'
-import { IService, IReducers, IClosestItem, ICategory } from '../types'
+import { IService, IReducers, IClosestItem, ICategory, IUser } from '../types'
 import { useDragAndDrop } from '../hooks/useDragAndDrop'
 import { notify } from '../reducers/notificationReducer'
 
-const CategoryEdit = () => {
+interface Props {
+  user?: IUser
+}
+
+const CategoryEdit = ({ user }: Props) => {
   const dispatch = useAppDispatch()
   const { services } = useSelector((state: IReducers) => state.services)
   const { categories } = useSelector((state: IReducers) => state.categories)
@@ -308,6 +312,7 @@ const CategoryEdit = () => {
                       setCategoryObject({
                         ...categoryObject,
                         kategoria: e.target.value?.toLowerCase() as string,
+                        viimeisinMuokkaus: user?.id as number,
                       })
                     }}
                   />

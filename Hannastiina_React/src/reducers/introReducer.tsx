@@ -20,7 +20,13 @@ export const fetchIntro = createAsyncThunk('intro/fetchIntro', async () => {
 
 export const updateIntro = createAsyncThunk(
   'intro/updateIntro',
-  async ({ id, newObject }: { id: number; newObject: string }) => {
+  async ({
+    id,
+    newObject,
+  }: {
+    id: number
+    newObject: { esittely: string; viimeisinMuokkaus: number }
+  }) => {
     const response = await introService.updateIntro(id, newObject)
     return response
   }

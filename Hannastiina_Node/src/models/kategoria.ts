@@ -1,10 +1,12 @@
 import { DataTypes, Model } from 'sequelize'
 import sequelize from '../config/database'
+import Kayttaja from './user'
 
 class Kategoria extends Model {
   public id!: number
   public kategoria!: number
-  orderIndex!: number
+  public orderIndex!: number
+  public viimeisinMuokkaus!: number
 }
 
 Kategoria.init(
@@ -21,6 +23,13 @@ Kategoria.init(
     orderIndex: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    viimeisinMuokkaus: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: Kayttaja,
+        key: 'id',
+      },
     },
   },
   {

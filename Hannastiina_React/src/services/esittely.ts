@@ -20,12 +20,11 @@ const getIntro = async (): Promise<IIntro[]> => {
 //   return response.data
 // }
 
-const updateIntro = async (id: number, newObject: string): Promise<string> => {
-  const response = await axios.put(
-    `${baseUrl}/${id}`,
-    { esittely: newObject },
-    getConfig()
-  )
+const updateIntro = async (
+  id: number,
+  newObject: { esittely: string; viimeisinMuokkaus: number }
+): Promise<string> => {
+  const response = await axios.put(`${baseUrl}/${id}`, newObject, getConfig())
   return response.data
 }
 

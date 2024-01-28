@@ -109,9 +109,10 @@ function App() {
           {user && user.role && user.role > 1 && (
             <Users user={user} users={users} windowWidth={windowWidth} />
           )}
-          {user && user.role && user.role > 1 && <CategoryEdit />}
+          {user && user.role && user.role > 1 && <CategoryEdit user={user} />}
           {user ? (
             <ServiceEdit
+              user={user}
               formatDuration={formatDuration}
               handleScrollToElement={handleScrollToElement}
             />
