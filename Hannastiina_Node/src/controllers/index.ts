@@ -252,6 +252,20 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
         })
         return
       }
+      // Find all Palvelu and Kategoria instances that were last edited by the user
+      const palvelut = await Palvelu.findAll({ where: { viimeisinMuokkaus: id } })
+      const kategoriat = await Kategoria.findAll({ where: { viimeisinMuokkaus: id } })
+
+      // Update the viimeisinMuokkaus field to 7
+      for (const palvelu of palvelut) {
+        palvelu.viimeisinMuokkaus = 7
+        await palvelu.save()
+      }
+      for (const kategoria of kategoriat) {
+        kategoria.viimeisinMuokkaus = 7
+        await kategoria.save()
+      }
+
       await user.destroy()
       res.status(200).json({
         success: true,
