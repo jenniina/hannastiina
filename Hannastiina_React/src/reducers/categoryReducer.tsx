@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import categoryService from '../services/kategoriat'
 
 import { ICategory, ICategoryState } from '../types'
+import { AxiosError } from 'axios'
 
 const initialState: ICategoryState = {
   categories: [],
@@ -20,25 +21,67 @@ export const fetchCategories = createAsyncThunk(
 
 export const addCategory = createAsyncThunk(
   'categories/addCategory',
-  async (category: { kategoria: string; viimeisinMuokkaus: number }) => {
-    const response = await categoryService.addCategory(category)
-    return response
+  async (
+    category: { kategoria: string; viimeisinMuokkaus: number },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await categoryService.addCategory(category)
+      return response
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error(error)
+        // If axios threw an error, it will be available in error.response
+        if (error.response) {
+          // We reject with the error message from the server
+          return rejectWithValue(error.response.data.message)
+        }
+      }
+    }
+    // If the error was caused by something else, we reject with a generic error message
+    return rejectWithValue({ message: 'Palvelun päivitys epäonnistui' })
   }
 )
 
 export const updateCategory = createAsyncThunk(
   'categories/updateCategory',
-  async ({ id, category }: { id: number; category: ICategory }) => {
-    const response = await categoryService.updateCategory(id, category)
-    return response
+  async ({ id, category }: { id: number; category: ICategory }, { rejectWithValue }) => {
+    try {
+      const response = await categoryService.updateCategory(id, category)
+      return response
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error(error)
+        // If axios threw an error, it will be available in error.response
+        if (error.response) {
+          // We reject with the error message from the server
+          return rejectWithValue(error.response.data.message)
+        }
+      }
+    }
+    // If the error was caused by something else, we reject with a generic error message
+    return rejectWithValue({ message: 'Palvelun päivitys epäonnistui' })
   }
 )
 
 export const deleteCategory = createAsyncThunk(
   'categories/deleteCategory',
-  async (id: number) => {
-    const response = await categoryService.deleteCategory(id)
-    return response
+  async (id: number, { rejectWithValue }) => {
+    try {
+      const response = await categoryService.deleteCategory(id)
+      return response
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error(error)
+        // If axios threw an error, it will be available in error.response
+        if (error.response) {
+          // We reject with the error message from the server
+          return rejectWithValue(error.response.data.message)
+        }
+      }
+    }
+    // If the error was caused by something else, we reject with a generic error message
+    return rejectWithValue({ message: 'Palvelun päivitys epäonnistui' })
   }
 )
 
@@ -52,9 +95,22 @@ export const getCategoryOrder = createAsyncThunk(
 
 export const updateCategoryOrder = createAsyncThunk(
   'categories/updateCategoryOrder',
-  async (newObject: number[]) => {
-    const response = await categoryService.updateCategoryOrder(newObject)
-    return response
+  async (newObject: number[], { rejectWithValue }) => {
+    try {
+      const response = await categoryService.updateCategoryOrder(newObject)
+      return response
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error(error)
+        // If axios threw an error, it will be available in error.response
+        if (error.response) {
+          // We reject with the error message from the server
+          return rejectWithValue(error.response.data.message)
+        }
+      }
+    }
+    // If the error was caused by something else, we reject with a generic error message
+    return rejectWithValue({ message: 'Palvelun päivitys epäonnistui' })
   }
 )
 

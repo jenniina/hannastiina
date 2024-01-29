@@ -423,9 +423,9 @@ footer address {
   gap: var(--gap);
 }
 #root .notification.error p {
-  color: red;
-  background-color: black;
-  border: 0.3em solid red;
+  color: darkred;
+  border: 0.3em dashed red;
+  outline: 0.3em solid red;
 }
 #root .notification p {
   pointer-events: all;

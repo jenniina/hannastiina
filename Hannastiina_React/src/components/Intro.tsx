@@ -33,18 +33,36 @@ const Intro = ({ user }: Props) => {
 
   const handleUpdateIntro = async (event: any) => {
     event.preventDefault()
-    dispatch(
-      updateIntro({
-        id: intro?.esittely?.[0]?.id as number,
-        newObject: { esittely: introText, viimeisinMuokkaus: user?.id as number },
-      })
-    )
-      .then(() => dispatch(fetchIntro()))
-      .then(() => dispatch(notify('Intro päivitetty', false, 5)))
-      .catch((e) => {
-        console.error(e)
-        dispatch(notify(`Virhe! ${e.response.data.message ?? ''}`, true, 8))
-      })
+    try {
+      await dispatch(
+        updateIntro({
+          id: intro?.esittely?.[0]?.id as number,
+          newObject: { esittely: introText, viimeisinMuokkaus: user?.id as number },
+        })
+      )
+        .then((result) => {
+          if (result.type === 'intro/updateIntro/rejected') {
+            if ('payload' in result && result.payload !== undefined) {
+              dispatch(notify(`Tapahtui virhe! ${result.payload}`, true, 8))
+            }
+          } else dispatch(notify('Esittely päivitetty', false, 3))
+        })
+        .catch((e) => {
+          console.error(e)
+          dispatch(
+            notify(
+              `Virhe! ${e?.response?.data?.message ?? (e as Error)?.message}`,
+              true,
+              8
+            )
+          )
+        })
+    } catch (e: any) {
+      console.error(e)
+      dispatch(
+        notify(`Virhe! ${e?.response?.data?.message ?? (e as Error)?.message}`, true, 8)
+      )
+    }
   }
 
   return (

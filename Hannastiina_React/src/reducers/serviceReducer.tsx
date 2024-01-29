@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import palvelutService from '../services/palvelut'
 import { IService, IServiceState } from '../types'
+import { AxiosError } from 'axios'
 
 const initialState: IServiceState = {
   services: [],
@@ -43,37 +44,64 @@ export const fetchServiceByName = createAsyncThunk(
 
 export const addService = createAsyncThunk(
   'services/addService',
-  async (newObject: IService) => {
+  async (newObject: IService, { rejectWithValue }) => {
     try {
       const response = await palvelutService.addService(newObject)
       return response
     } catch (error) {
-      throw new Error('Virhe palvelun lisäämisessä')
+      if (error instanceof AxiosError) {
+        console.error(error)
+        // If axios threw an error, it will be available in error.response
+        if (error.response) {
+          // We reject with the error message from the server
+          return rejectWithValue(error.response.data.message)
+        }
+      }
     }
+    // If the error was caused by something else, we reject with a generic error message
+    return rejectWithValue({ message: 'Palvelun lisäys epäonnistui' })
   }
 )
 
 export const updateService = createAsyncThunk(
   'services/updateService',
-  async ({ id, newObject }: { id: number; newObject: IService }) => {
+  async ({ id, newObject }: { id: number; newObject: IService }, { rejectWithValue }) => {
     try {
       const response = await palvelutService.updateService(id, newObject)
       return response
     } catch (error) {
-      throw new Error('Virhe palveluiden päivittämisessä')
+      if (error instanceof AxiosError) {
+        console.error(error)
+        // If axios threw an error, it will be available in error.response
+        if (error.response) {
+          // We reject with the error message from the server
+          return rejectWithValue(error.response.data.message)
+        }
+      }
     }
+    // If the error was caused by something else, we reject with a generic error message
+    return rejectWithValue({ message: 'Palvelun päivitys epäonnistui' })
   }
 )
 
 export const deleteService = createAsyncThunk(
   'services/deleteService',
-  async (id: number) => {
+  async (id: number, { rejectWithValue }) => {
     try {
       const response = await palvelutService.deleteService(id)
       return response
     } catch (error) {
-      throw new Error('Virhe palvelun poistamisessa')
+      if (error instanceof AxiosError) {
+        console.error(error)
+        // If axios threw an error, it will be available in error.response
+        if (error.response) {
+          // We reject with the error message from the server
+          return rejectWithValue(error.response.data.message)
+        }
+      }
     }
+    // If the error was caused by something else, we reject with a generic error message
+    return rejectWithValue({ message: 'Palvelun poisto epäonnistui' })
   }
 )
 

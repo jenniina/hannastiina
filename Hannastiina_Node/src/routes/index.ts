@@ -50,7 +50,7 @@ router.put('/esittely/:id', [authenticateUser, addOrEditIntro])
 router.delete('/esittely/:id', [authenticateUser, deleteIntro])
 
 router.get('/kategoriat', getCategories)
-router.post('/kategoriat', addCategory)
+router.post('/kategoriat', [authenticateUser, addCategory])
 router.put('/kategoriat/:id', [authenticateUser, updateCategory])
 router.get('/kategoriat/jarjestys', getCategoryOrder)
 router.put('/kategoriat', [authenticateUser, updateCategoryOrder])
@@ -58,7 +58,7 @@ router.delete('/kategoriat/:id', [authenticateUser, deleteCategory])
 
 router.get('/jarjestys', getOrder)
 router.post('/jarjestys', [authenticateUser, addOrder])
-router.delete('/jarjestys/:id', deleteOrder)
+router.delete('/jarjestys/:id', [authenticateUser, deleteOrder])
 router.put('/jarjestys', [authenticateUser, updateOrder])
 
 router.get('/kayttajat', [checkIfAdmin, getUsers])

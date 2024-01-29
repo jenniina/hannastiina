@@ -116,7 +116,7 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
     setDescription(event.target.value)
   }
 
-  const handleAddService = (event: FormEvent<HTMLFormElement>) => {
+  const handleAddService = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const newService: IService = {
       nimi: name,
@@ -127,12 +127,19 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
       kuvaus: description,
       viimeisinMuokkaus: user?.id as number,
     }
-    dispatch(addService(newService))
-      .then(() => {
+    await dispatch(addService(newService))
+      .then((result) => {
+        if (result.type === 'services/addService/rejected') {
+          if ('payload' in result && result.payload !== undefined) {
+            dispatch(notify(`Tapahtui virhe! ${result.payload}`, true, 8))
+          }
+          dispatch(fetchServices())
+          return
+        } else dispatch(notify('Palvelu lisätty', false, 3))
+
         resetPlus()
         dispatch(fetchServices())
       })
-      .then(() => dispatch(notify('Palvelu lisätty', false, 5)))
       .catch((error) => {
         console.error(error)
         dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 5))
@@ -192,11 +199,17 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
     }
   }
 
-  const handleDelete = (id: number) => {
+  const handleDelete = async (id: number) => {
     if (window.confirm('Haluatko varmasti poistaa palvelun? Poistoa ei voi peruuttaa.'))
-      dispatch(deleteService(id))
-        .then(() => dispatch(fetchServices()))
-        .then(() => dispatch(notify('Palvelu poistettu', false, 5)))
+      await dispatch(deleteService(id))
+        .then((result) => {
+          if (result.type === 'services/deleteService/rejected') {
+            if ('payload' in result && result.payload !== undefined) {
+              dispatch(notify(`Tapahtui virhe! ${result.payload}`, true, 8))
+            }
+          } else dispatch(notify('Palvelu poistettu', false, 3))
+          dispatch(fetchServices())
+        })
         .catch((error) => {
           console.error(error)
           dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 5))
@@ -215,11 +228,18 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
       viimeisinMuokkaus: user?.id as number,
     }
     dispatch(updateService({ id: editId, newObject: editedService }))
-      .then(() => {
+      .then((result) => {
+        if (result.type === 'services/updateService/rejected') {
+          if ('payload' in result && result.payload !== undefined) {
+            dispatch(notify(`Tapahtui virhe! ${result.payload}`, true, 8))
+          }
+          dispatch(fetchServices())
+          return
+        } else dispatch(notify('Palvelu päivitetty', false, 3))
+
         resetPlus()
         dispatch(fetchServices())
       })
-      .then(() => dispatch(notify('Palvelu päivitetty', false, 5)))
       .catch((error) => {
         console.error(error)
         dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 5))

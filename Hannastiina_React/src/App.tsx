@@ -77,7 +77,7 @@ function App() {
                 <div>
                   {user?.role !== undefined &&
                     user?.role !== null &&
-                    Number(user?.role) > 1 && (
+                    Number(user?.role) !== 1 && (
                       <button
                         onClick={(e) => {
                           handleScrollToElement(e, 'kayttajat')
@@ -87,34 +87,41 @@ function App() {
                         <span className='around'>&#xFE3D;</span>
                       </button>
                     )}
-                  <button
-                    onClick={(e) => {
-                      handleScrollToElement(e, 'kategoriat')
-                    }}
-                  >
-                    <span>Kategoriat</span>
-                    <span className='around'>&#xFE3D;</span>
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      handleScrollToElement(e, 'palvelut')
-                    }}
-                  >
-                    <span>Palvelut</span>
-                    <span className='around'>&#xFE3D;</span>
-                  </button>
+
+                  {user?.role !== undefined &&
+                    user?.role !== null &&
+                    Number(user?.role) > 1 && (
+                      <button
+                        onClick={(e) => {
+                          handleScrollToElement(e, 'kategoriat')
+                        }}
+                      >
+                        <span>Kategoriat</span>
+                        <span className='around'>&#xFE3D;</span>
+                      </button>
+                    )}
+
+                  {user?.role !== undefined &&
+                    user?.role !== null &&
+                    Number(user?.role) !== 1 && (
+                      <button
+                        onClick={(e) => {
+                          handleScrollToElement(e, 'palvelut')
+                        }}
+                      >
+                        <span>Palvelut</span>
+                        <span className='around'>&#xFE3D;</span>
+                      </button>
+                    )}
                 </div>
               </div>
             </>
           )}
           <Intro user={user} />
           {!user && <Map windowHeight={windowHeight} />}
-          {user &&
-            user?.role !== undefined &&
-            user?.role !== null &&
-            Number(user?.role) > 1 && (
-              <Users user={user} users={users} windowWidth={windowWidth} />
-            )}
+          {user && Number(user?.role) !== 1 ? (
+            <Users user={user} users={users} windowWidth={windowWidth} />
+          ) : null}
           {user &&
             user?.role !== undefined &&
             user?.role !== null &&

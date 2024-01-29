@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import introService from '../services/esittely'
 import { IIntroState } from '../types'
+import { AxiosError } from 'axios'
 
 const initialState: IIntroState = {
   esittely: [],
@@ -20,15 +21,32 @@ export const fetchIntro = createAsyncThunk('intro/fetchIntro', async () => {
 
 export const updateIntro = createAsyncThunk(
   'intro/updateIntro',
-  async ({
-    id,
-    newObject,
-  }: {
-    id: number
-    newObject: { esittely: string; viimeisinMuokkaus: number }
-  }) => {
-    const response = await introService.updateIntro(id, newObject)
-    return response
+  async (
+    {
+      id,
+      newObject,
+    }: {
+      id: number
+      newObject: { esittely: string; viimeisinMuokkaus: number }
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const response = await introService.updateIntro(id, newObject)
+      return response
+    } catch (error) {
+      // Use a type guard to check if error is an instance of AxiosError
+      if (error instanceof AxiosError) {
+        console.error(error)
+        // If axios threw an error, it will be available in error.response
+        if (error.response) {
+          // We reject with the error message from the server
+          return rejectWithValue(error.response.data.message)
+        }
+      }
+      // If the error was caused by something else, we reject with a generic error message
+      return rejectWithValue({ message: 'Esittelyn päivitys epäonnistui' })
+    }
   }
 )
 
@@ -51,6 +69,11 @@ const introSlice = createSlice({
         state.loading = false
         state.esittely = action.payload
       })
+      .addCase(fetchIntro.rejected, (state, _action) => {
+        state.loading = false
+        state.error = 'Tapahtui virhe' // action.error.message
+      })
+
       //   .addCase(addIntro.pending, (state, _action) => {
       //     state.loading = true
       //     state.error = null
@@ -67,6 +90,10 @@ const introSlice = createSlice({
       .addCase(updateIntro.fulfilled, (state, action) => {
         state.loading = false
         state.esittely[0].esittely = action.payload
+      })
+      .addCase(updateIntro.rejected, (state, _action) => {
+        state.loading = false
+        state.error = 'Tapahtui virhe -' //action.error.message
       })
     //   .addCase(deleteIntro.pending, (state, _action) => {
     //     state.loading = true

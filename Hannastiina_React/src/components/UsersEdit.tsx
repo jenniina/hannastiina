@@ -49,24 +49,26 @@ const Users = ({ user, users, windowWidth }: Props) => {
       password,
       role,
     }
-    dispatch(createUser(newUser))
-      .then(() => {
-        setUsername('')
-        setName('')
-        setPassword('')
-        setPasswordAgain('')
-        dispatch(notify('Käyttäjä luotu', false, 5))
-      })
-      .then(() => dispatch(initializeUsers()))
-      .catch((e) => {
-        console.error(e)
-        dispatch(notify(`Virhe: ${e.response.data.message}`, true, 8))
-      })
+    if (user && Number(user?.role) > 1)
+      dispatch(createUser(newUser))
+        .then(() => {
+          setUsername('')
+          setName('')
+          setPassword('')
+          setPasswordAgain('')
+          dispatch(notify('Käyttäjä luotu', false, 5))
+        })
+        .then(() => dispatch(initializeUsers()))
+        .catch((e) => {
+          console.error(e)
+          dispatch(notify(`Virhe: ${e.response.data.message}`, true, 8))
+        })
+    else dispatch(notify('Ei oikeuksia luoda käyttäjää', true, 5))
   }
 
   return (
     <>
-      {user?.role && Number(user?.role) > 1 && (
+      {user && Number(user?.role) !== 1 ? (
         <div className='edit'>
           <section id='kayttajat' className='card kayttajat'>
             <h2>Käyttäjähallinta</h2>
@@ -82,115 +84,175 @@ const Users = ({ user, users, windowWidth }: Props) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {users
+                  {user && Number(user?.role) > 1 ? (
+                    users
+                      ?.slice()
+                      ?.sort(
+                        (a, b) =>
+                          (Number(b?.role) || 0) - (Number(a?.role) || 0) ||
+                          (Number(a?.id) || 0) - (Number(b?.id) || 0)
+                      )
+                      ?.map((u) => {
+                        return (
+                          <tr
+                            key={u?._id}
+                            className={`${u?.role && u.role > 1 ? 'admin' : ''} `}
+                          >
+                            <td>
+                              <span>{u?.name}</span>
+                            </td>
+                            <td>
+                              <span>{u?.username}</span>
+                            </td>
+                            <td>
+                              <span>
+                                {u?.role && Number(u.role) > 2
+                                  ? 'Omistaja'
+                                  : u?.role && Number(u.role) > 1
+                                  ? 'Hallinnoija'
+                                  : u?.role && Number(u.role) > 0
+                                  ? 'Valtuutettu'
+                                  : 'Testaaja'}
+                              </span>
+                            </td>
+                            <td>
+                              {user._id !== u._id && Number(u.role) < 3 && (
+                                <button
+                                  className='danger smaller'
+                                  onClick={() => {
+                                    if (window.confirm(`Poistetaanko ${u.name}?`))
+                                      dispatch(removeUser(u._id))
+                                        .then(() =>
+                                          dispatch(notify('Käyttäjä poistettu', false, 5))
+                                        )
+                                        .then(() => dispatch(initializeUsers()))
+                                        .catch((e) => {
+                                          console.error(e)
+                                          dispatch(
+                                            notify(
+                                              `Virhe: ${e.response.data.message}`,
+                                              true,
+                                              8
+                                            )
+                                          )
+                                        })
+                                  }}
+                                >
+                                  Poista
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        )
+                      })
+                  ) : (
+                    <>
+                      <tr>
+                        <td>
+                          <span>Admin</span>
+                        </td>
+                        <td>
+                          <span>admin@hannastii.na</span>
+                        </td>
+                        <td>
+                          <span>Hallinnoija</span>
+                        </td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <span>Testaaja</span>
+                        </td>
+                        <td>
+                          <span>testi@testaaja.fi</span>
+                        </td>
+                        <td>
+                          <span>Testaaja</span>
+                        </td>
+                        <td></td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <span>Tester</span>
+                        </td>
+                        <td>
+                          <span>tester@test.ing</span>
+                        </td>
+                        <td>
+                          <span>Testaaja</span>
+                        </td>
+                        <td>
+                          <button
+                            className='danger smaller'
+                            onClick={() => {
+                              if (window.confirm(`Poistetaanko Tester?`))
+                                dispatch(notify('Käyttäjää ei voi poistaa', true, 5))
+                            }}
+                          >
+                            Poista
+                          </button>
+                        </td>
+                      </tr>
+                    </>
+                  )}
+                </tbody>
+              </table>
+            ) : (
+              <ul>
+                {user && Number(user?.role) !== 1 ? (
+                  users
                     ?.slice()
                     ?.sort(
                       (a, b) =>
                         (Number(b?.role) || 0) - (Number(a?.role) || 0) ||
                         (Number(a?.id) || 0) - (Number(b?.id) || 0)
+                      //(a?.name || '').localeCompare(b?.name || '')
                     )
-                    ?.map((u) => {
-                      return (
-                        <tr
-                          key={u?._id}
-                          className={`${u?.role && u.role > 1 ? 'admin' : ''} `}
-                        >
-                          <td>
-                            <span>{u?.name}</span>
-                          </td>
-                          <td>
-                            <span>{u?.username}</span>
-                          </td>
-                          <td>
-                            <span>
-                              {u?.role && Number(u.role) > 2
-                                ? 'Omistaja'
-                                : u?.role && Number(u.role) > 1
-                                ? 'Hallinnoija'
-                                : u?.role && Number(u.role) > 0
-                                ? 'Valtuutettu'
-                                : 'Testaaja'}
-                            </span>
-                          </td>
-                          <td>
-                            {user._id !== u._id && Number(u.role) < 3 && (
-                              <button
-                                className='danger smaller'
-                                onClick={() => {
-                                  if (window.confirm(`Poistetaanko ${u.name}?`))
-                                    dispatch(removeUser(u._id))
-                                      .then(() =>
-                                        dispatch(notify('Käyttäjä poistettu', false, 5))
-                                      )
-                                      .then(() => dispatch(initializeUsers()))
-                                      .catch((e) => {
-                                        console.error(e)
-                                        dispatch(
-                                          notify(
-                                            `Virhe: ${e.response.data.message}`,
-                                            true,
-                                            8
-                                          )
-                                        )
-                                      })
-                                }}
-                              >
-                                Poista
-                              </button>
-                            )}
-                          </td>
-                        </tr>
-                      )
-                    })}
-                </tbody>
-              </table>
-            ) : (
-              <ul>
-                {users
-                  ?.slice()
-                  ?.sort(
-                    (a, b) =>
-                      (Number(b?.role) || 0) - (Number(a?.role) || 0) ||
-                      (Number(a?.id) || 0) - (Number(b?.id) || 0)
-                    //(a?.name || '').localeCompare(b?.name || '')
-                  )
-                  ?.map((u) => (
-                    <li
-                      key={u?._id}
-                      className={`${u?.role && Number(u.role) > 1 ? 'admin' : ''} `}
-                    >
-                      <span>{u?.name}</span>
-                      <span>({u?.username})</span>
-                      <span>
-                        {u?.role && Number(u.role) > 2
-                          ? 'Omistaja'
-                          : u?.role && Number(u.role) > 1
-                          ? 'Hallinnoija'
-                          : ''}
-                      </span>
-                      {user._id !== u._id && Number(u.role) < 3 && (
-                        <button
-                          className='danger smaller'
-                          onClick={() => {
-                            if (window.confirm(`Poistetaanko ${u.name}?`))
-                              dispatch(removeUser(u._id))
-                                .then(() =>
-                                  dispatch(notify('Käyttäjä poistettu', false, 5))
-                                )
-                                .then(() => dispatch(initializeUsers()))
-                                .catch((e) => {
-                                  console.error(e)
-                                  dispatch(
-                                    notify(`Virhe: ${e.response.data.message}`, true, 8)
+                    ?.map((u) => (
+                      <li
+                        key={u?._id}
+                        className={`${u?.role && Number(u.role) > 1 ? 'admin' : ''} `}
+                      >
+                        <span>{u?.name}</span>
+                        <span>({u?.username})</span>
+                        <span>
+                          {u?.role && Number(u.role) > 2
+                            ? 'Omistaja'
+                            : u?.role && Number(u.role) > 1
+                            ? 'Hallinnoija'
+                            : ''}
+                        </span>
+                        {user._id !== u._id && Number(u.role) < 3 && (
+                          <button
+                            className='danger smaller'
+                            onClick={() => {
+                              if (
+                                user &&
+                                Number(user?.role) > 1 &&
+                                window.confirm(`Poistetaanko ${u.name}?`)
+                              )
+                                dispatch(removeUser(u._id))
+                                  .then(() =>
+                                    dispatch(notify('Käyttäjä poistettu', false, 5))
                                   )
-                                })
-                          }}
-                        >
-                          <span>Poista</span>
-                        </button>
-                      )}
-                    </li>
-                  ))}
+                                  .then(() => dispatch(initializeUsers()))
+                                  .catch((e) => {
+                                    console.error(e)
+                                    dispatch(
+                                      notify(`Virhe: ${e.response.data.message}`, true, 8)
+                                    )
+                                  })
+                              else dispatch(notify('Käyttäjää ei voi poistaa', true, 5))
+                            }}
+                          >
+                            <span>Poista</span>
+                          </button>
+                        )}
+                      </li>
+                    ))
+                ) : (
+                  <li>testi</li>
+                )}
               </ul>
             )}
 
@@ -203,17 +265,19 @@ const Users = ({ user, users, windowWidth }: Props) => {
                   dispatch(notify('Salasanat eivät täsmää', true, 5))
                   return
                 }
-                dispatch(updatePassword({ _id: user?._id, password, passwordOld }))
-                  .then(() => {
-                    setUsername('')
-                    setPassword('')
-                    setPasswordOld('')
-                    dispatch(notify('Salasana vaihdettu', false, 5))
-                  })
-                  .catch((e) => {
-                    console.error(e)
-                    dispatch(notify(`Virhe: ${e.response.data.message}`, true, 8))
-                  })
+                if (user && Number(user?.role) > 0)
+                  dispatch(updatePassword({ _id: user?._id, password, passwordOld }))
+                    .then(() => {
+                      setUsername('')
+                      setPassword('')
+                      setPasswordOld('')
+                      dispatch(notify('Salasana vaihdettu', false, 5))
+                    })
+                    .catch((e) => {
+                      console.error(e)
+                      dispatch(notify(`Virhe: ${e.response.data.message}`, true, 8))
+                    })
+                else dispatch(notify('Ei oikeuksia vaihtaa salasanaa', true, 5))
               }}
             >
               <div className='input-wrap'>
@@ -258,19 +322,21 @@ const Users = ({ user, users, windowWidth }: Props) => {
             <form
               onSubmit={(e) => {
                 e.preventDefault()
-                dispatch(updateUser({ _id: user?._id, name: user_name, passwordOld }))
-                  .then((u) => dispatch(refreshUser(u.user)))
-                  .then(() => {
-                    setUsername('')
-                    setName('')
-                    setPasswordOld('')
-                    dispatch(notify('Nimi vaihdettu', false, 5))
-                  })
-                  .then(() => dispatch(initializeUser()))
-                  .catch((e) => {
-                    console.error(e)
-                    dispatch(notify(`Virhe: ${e.response.data.message}`, true, 8))
-                  })
+                if (user && Number(user?.role) > 0)
+                  dispatch(updateUser({ _id: user?._id, name: user_name, passwordOld }))
+                    .then((u) => dispatch(refreshUser(u.user)))
+                    .then(() => {
+                      setUsername('')
+                      setName('')
+                      setPasswordOld('')
+                      dispatch(notify('Nimi vaihdettu', false, 5))
+                    })
+                    .then(() => dispatch(initializeUser()))
+                    .catch((e) => {
+                      console.error(e)
+                      dispatch(notify(`Virhe: ${e.response.data.message}`, true, 8))
+                    })
+                else dispatch(notify('Ei oikeuksia vaihtaa nimeä', true, 5))
               }}
             >
               <div className='input-wrap'>
@@ -304,22 +370,27 @@ const Users = ({ user, users, windowWidth }: Props) => {
             <form
               onSubmit={(e) => {
                 e.preventDefault()
-
-                dispatch(
-                  updateUsername({ _id: user?._id, username: user_username, passwordOld })
-                )
-                  .then((u) => dispatch(refreshUser(u.user)))
-                  .then(() => {
-                    setUsername('')
-                    setName('')
-                    setPasswordOld('')
-                    dispatch(notify('Sähköposti vaihdettu', false, 5))
-                  })
-                  .then(() => dispatch(initializeUser()))
-                  .catch((e) => {
-                    console.error(e)
-                    dispatch(notify(`Virhe: ${e.response.data.message}`, true, 8))
-                  })
+                if (user && Number(user?.role) > 0)
+                  dispatch(
+                    updateUsername({
+                      _id: user?._id,
+                      username: user_username,
+                      passwordOld,
+                    })
+                  )
+                    .then((u) => dispatch(refreshUser(u.user)))
+                    .then(() => {
+                      setUsername('')
+                      setName('')
+                      setPasswordOld('')
+                      dispatch(notify('Sähköposti vaihdettu', false, 5))
+                    })
+                    .then(() => dispatch(initializeUser()))
+                    .catch((e) => {
+                      console.error(e)
+                      dispatch(notify(`Virhe: ${e.response.data.message}`, true, 8))
+                    })
+                else dispatch(notify('Ei oikeuksia vaihtaa sähköpostia', true, 5))
               }}
             >
               <div className='input-wrap'>
@@ -409,6 +480,8 @@ const Users = ({ user, users, windowWidth }: Props) => {
             </form>
           </section>
         </div>
+      ) : (
+        <></>
       )}
     </>
   )

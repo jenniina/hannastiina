@@ -26,8 +26,6 @@ export interface IUser {
   passwordOld?: string
   role?: number
   token?: string
-  resetToken?: string
-  confirmToken?: string
   createdAt?: string
   updatedAt?: string
 }

@@ -66,7 +66,7 @@ const checkIfAdmin = async (req: Request, res: Response, next: NextFunction) => 
     if (!decoded) throw new Error('Kirjaudu uudestaan sisään')
     const findUser: IUser | null = await User.findOne({ where: { _id: decoded?.userId } })
 
-    if (findUser && findUser?.role && findUser?.role > 1) {
+    if (findUser && findUser?.role && Number(findUser?.role) > 1) {
       next()
     } else {
       res.status(403).json({
@@ -315,18 +315,19 @@ const authenticateUser = async (
 
     if (!user) throw new Error('Autentikointi epäonnistui.')
 
-    if (user.role === 0 || user.role === undefined)
-      throw new Error('Käyttäjätilillä ei ole käyttöoikeuksia.')
-
-    // Attach user information to the request object
-    req.body.user = user
-    next()
+    if (Number(user.role) <= 0) throw new Error('Testitilillä ei ole käyttöoikeuksia.')
+    else {
+      // Attach user information to the request object
+      req.body.user = user
+      next()
+    }
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Virhe:', error)
     res.status(401).json({
       success: false,
-      message: `Virhe! ${(error as Error).message}`,
+      message: `${(error as Error).message}`,
     })
+    return
   }
 }
 
@@ -693,15 +694,17 @@ const addOrEditIntro = async (req: Request, res: Response): Promise<void> => {
           id: intro.id,
         },
       })
-      res.status(200).json(updatedIntro)
+      res
+        .status(200)
+        .json({ success: true, message: 'Esittely päivitetty', intro: updatedIntro })
     } else {
       const newIntro = await Esittely.create(req.body)
-      res.status(200).json(newIntro)
+      res.status(200).json({ success: true, message: 'Esittely luotu', intro: newIntro })
     }
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Tapahtui virhe!',
+      message: 'Tapahtui virhe!~',
       error,
     })
     console.error('Virhe:', error)
@@ -875,7 +878,7 @@ const deleteService = async (req: Request, res: Response): Promise<void> => {
       res.status(404).json({ success: false, message: 'Palvelua ei löytynyt.' })
       return
     }
-    res.status(200).json(service)
+    res.status(200).json({ success: true, message: 'Palvelu poistettu.' })
   } catch (error) {
     res.status(500).json({
       success: false,

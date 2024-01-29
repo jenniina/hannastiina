@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import orderByService from '../services/jarjestys'
 import { IOrderBy, IOrderByState } from '../types'
+import { AxiosError } from 'axios'
 
 const initialState: IOrderByState = {
   orderBy: [],
@@ -15,9 +16,22 @@ export const fetchOrderBy = createAsyncThunk('orderBy/fetchOrderBy', async () =>
 
 export const updateOrderBy = createAsyncThunk(
   'orderBy/updateOrderBy',
-  async (newObject: IOrderBy[]) => {
-    const response = await orderByService.updateOrder(newObject)
-    return response
+  async (newObject: IOrderBy[], { rejectWithValue }) => {
+    try {
+      const response = await orderByService.updateOrder(newObject)
+      return response
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.error(error)
+        // If axios threw an error, it will be available in error.response
+        if (error.response) {
+          // We reject with the error message from the server
+          return rejectWithValue(error.response.data.message)
+        }
+      }
+    }
+    // If the error was caused by something else, we reject with a generic error message
+    return rejectWithValue({ message: 'Palvelun päivitys epäonnistui' })
   }
 )
 

@@ -4,6 +4,7 @@ import { fetchCategories, updateCategoryOrder } from '../reducers/categoryReduce
 import { updateOrderBy } from '../reducers/orderByReducer'
 import { useSelector } from 'react-redux'
 import { useAppDispatch } from './useAppDispatch'
+import { notify } from '../reducers/notificationReducer'
 
 export const useDragAndDrop = (initialState: IService[]) => {
   const dispatch = useAppDispatch()
@@ -120,6 +121,7 @@ export const useDragAndDrop = (initialState: IService[]) => {
           const updated = Object.values(updatedListItemsByCategory)?.flat()
 
           // Dispatch the updateOrderBy action with the new order
+
           dispatch(
             updateOrderBy(
               updated?.map((service, index) => ({
@@ -128,7 +130,16 @@ export const useDragAndDrop = (initialState: IService[]) => {
               }))
             )
           )
-            .then(() => resolve())
+            .then((result) => {
+              if (result.type === 'orderBy/updateOrderBy/rejected') {
+                if ('payload' in result && result.payload !== undefined) {
+                  dispatch(notify(`Tapahtui virhe! ${result.payload}`, true, 8))
+                }
+                return
+              }
+
+              resolve()
+            })
             .catch((error) => console.error(error))
 
           return updatedListItemsByCategory
