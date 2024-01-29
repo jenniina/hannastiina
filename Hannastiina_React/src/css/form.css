@@ -58,16 +58,18 @@ form .nowrap {
   white-space: nowrap;
 }
 fieldset:not(:last-of-type) {
-  border-bottom: 1px dashed var(--color-gray-general);
+  border-bottom: 1px dashed var(--silver);
 }
 legend {
   font-size: clamp(var(--title-S), 5vw, var(--title-M));
   letter-spacing: calc(var(--letter-spacing) * -1);
   margin: 1em 0 0 0;
-  text-align: left;
-  font-weight: 600;
+  width: 100%;
+  text-align: center;
+  font-weight: 400;
   padding-top: 1.5em;
   font-family: var(--title-family);
+  border-bottom: 1px solid var(--silver);
 }
 legend > p {
   font-size: clamp(calc(1rem * var(--responsive_scale)), 1.5vw, var(--title-XS));
