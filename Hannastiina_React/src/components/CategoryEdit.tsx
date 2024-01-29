@@ -31,14 +31,61 @@ const CategoryEdit = ({ user }: Props) => {
     handleDragging,
   } = useDragAndDrop(services as IService[])
 
-  const cat = categories[0]
-  const firstLetter = cat?.kategoria?.charAt(0)?.toUpperCase() ?? ''
-  const rest = cat?.kategoria.slice(1) ?? ''
-  const kategoria = firstLetter + rest
-  const [category_, setCategory] = useState<SelectOption>({
-    value: categories[0]?.id as number,
-    label: kategoria,
+  const mapCategoriesToOptions = useCallback(
+    (categories: ICategory[]) => {
+      return categories?.map((category) => {
+        const cat = categories?.find((c) => c?.id === category?.id)
+        const firstLetter = cat?.kategoria?.charAt(0)?.toUpperCase() ?? ''
+        const rest = cat?.kategoria.slice(1) ?? ''
+        const kategoria = firstLetter + rest
+        return {
+          value: category?.id,
+          label: kategoria,
+        }
+      }) as SelectOption[]
+    },
+    [categories]
+  )
+  const options = mapCategoriesToOptions(categories)
+  const [category_, setCategory] = useState<SelectOption>(options[0])
+  const mapEmptyCategoriesToOptions = useCallback(
+    (categories: ICategory[]) => {
+      return categories
+        ?.filter((category) => {
+          // Find the category name in the categories array
+          const categoryName = category.kategoria
+
+          // Get the services for this category
+          const services = listItemsByCategory[categoryName]
+
+          // Return true if there are no services associated with the category
+          return services && services.length === 0
+        })
+        .map((category) => {
+          const firstLetter = category.kategoria.charAt(0).toUpperCase()
+          const rest = category.kategoria.slice(1)
+          const kategoria = firstLetter + rest
+          return {
+            value: category?.id,
+            label: kategoria,
+          }
+        }) as SelectOption[]
+    },
+    [listItemsByCategory]
+  )
+  const emptyOptions = mapEmptyCategoriesToOptions(categories)
+  const [emptyCategory, setEmptyCategory] = useState<SelectOption>({
+    value: emptyOptions[0]?.value as number,
+    label: emptyOptions[0]?.label as string,
   })
+
+  useEffect(() => {
+    setCategory(options[0])
+  }, [categories])
+
+  useEffect(() => {
+    setEmptyCategory(emptyOptions[0])
+  }, [listItemsByCategory])
 
   const [name, setName] = useState('')
   const [newName, setNewName] = useState('')
@@ -83,52 +130,6 @@ const CategoryEdit = ({ user }: Props) => {
     },
     [dispatch, categories, listItemsByCategory]
   )
-
-  const mapCategoriesToOptions = useCallback(
-    (categories: ICategory[]) => {
-      return categories?.map((category) => {
-        const cat = categories?.find((c) => c?.id === category?.id)
-        const firstLetter = cat?.kategoria?.charAt(0)?.toUpperCase() ?? ''
-        const rest = cat?.kategoria.slice(1) ?? ''
-        const kategoria = firstLetter + rest
-        return {
-          value: category?.id,
-          label: kategoria,
-        }
-      }) as SelectOption[]
-    },
-    [categories]
-  )
-
-  const options = mapCategoriesToOptions(categories)
-
-  const mapEmptyCategoriesToOptions = useCallback(
-    (categories: ICategory[]) => {
-      return categories
-        ?.filter((category) => {
-          // Find the category name in the categories array
-          const categoryName = category.kategoria
-
-          // Get the services for this category
-          const services = listItemsByCategory[categoryName]
-
-          // Return true if there are no services associated with the category
-          return services && services.length === 0
-        })
-        .map((category) => {
-          const firstLetter = category.kategoria.charAt(0).toUpperCase()
-          const rest = category.kategoria.slice(1)
-          const kategoria = firstLetter + rest
-          return {
-            value: category?.id,
-            label: kategoria,
-          }
-        }) as SelectOption[]
-    },
-    [listItemsByCategory]
-  )
-
-  const emptyOptions = mapEmptyCategoriesToOptions(categories)
 
   useEffect(() => {
     setTimeout(() => {
@@ -345,9 +346,9 @@ const CategoryEdit = ({ user }: Props) => {
               <Select
                 className='category-select'
                 id='category-empty'
-                value={category_}
+                value={emptyCategory}
                 onChange={(o) => {
-                  setCategory(o as SelectOption)
+                  setEmptyCategory(o as SelectOption)
                   setCategoryObject({
                     ...(categories?.find((c) => c?.id === o?.value) as ICategory),
                     viimeisinMuokkaus: user?.id as number,
@@ -355,7 +356,7 @@ const CategoryEdit = ({ user }: Props) => {
                 }}
                 options={emptyOptions}
                 instructions='Valitse kategoria'
-                selectAnOption='Valitse kategoria'
+                selectAnOption={emptyCategory?.label}
               />
               <button type='submit' className='danger'>
                 Poista kategoria
