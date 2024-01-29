@@ -5,14 +5,18 @@ interface IServiceSingleProps {
   service: IService
   formatDuration: (minutes: number) => string
   windowWidth: number
+  kesto: boolean
+  kuvaus: boolean
 }
 
 const ServiceSingle: React.FC<IServiceSingleProps> = ({
   service,
   formatDuration,
   windowWidth,
+  kesto,
+  kuvaus,
 }) => {
-  const kuvaus = service?.kuvaus?.split(/\n+/) ?? ['']
+  const kuvausTeksti = service?.kuvaus?.split(/\n+/) ?? ['']
 
   return (
     <>
@@ -24,20 +28,26 @@ const ServiceSingle: React.FC<IServiceSingleProps> = ({
               {service.tarkennus}
             </span>
           </td>
-          <td>
-            <span>{formatDuration(service.kesto)}</span>
-          </td>
+          {kesto && (
+            <td>
+              <span>
+                {Number(service.kesto) === 0 ? '' : formatDuration(service.kesto)}
+              </span>
+            </td>
+          )}
           <td>
             <span>{service.hinta.toString().replace('.', ',')} €</span>
           </td>
-          <td className='kuvaus'>
-            <span>
-              {kuvaus[0] !== '' &&
-                kuvaus?.map((rivi, index) => {
-                  return <span key={index}>{rivi}</span>
-                })}
-            </span>
-          </td>
+          {kuvaus && (
+            <td className='kuvaus'>
+              <span>
+                {kuvausTeksti[0] !== '' &&
+                  kuvausTeksti?.map((rivi, index) => {
+                    return <span key={index}>{rivi}</span>
+                  })}
+              </span>
+            </td>
+          )}
         </tr>
       ) : (
         <li className='single'>
@@ -51,10 +61,10 @@ const ServiceSingle: React.FC<IServiceSingleProps> = ({
             <span>{formatDuration(service.kesto)}</span>
             <span>{service.hinta.toString().replace('.', ',')} €</span>
           </div>
-          {kuvaus[0] !== '' && (
+          {kuvausTeksti[0] !== '' && (
             <div>
               <span>
-                {kuvaus?.map((rivi, index) => {
+                {kuvausTeksti?.map((rivi, index) => {
                   return <span key={index}>{rivi}</span>
                 })}
               </span>

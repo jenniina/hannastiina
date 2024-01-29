@@ -65,11 +65,10 @@ legend {
   letter-spacing: calc(var(--letter-spacing) * -1);
   margin: 1em 0 0 0;
   width: 100%;
-  text-align: center;
+  text-align: left;
   font-weight: 400;
   padding-top: 1.5em;
   font-family: var(--title-family);
-  border-bottom: 1px solid var(--silver);
 }
 legend > p {
   font-size: clamp(calc(1rem * var(--responsive_scale)), 1.5vw, var(--title-XS));

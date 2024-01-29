@@ -54,25 +54,28 @@ const verifyTokenMiddleware = async (req: Request, res: Response): Promise<void>
     })
   } catch (error) {
     console.error('Error:', error)
-    res
-      .status(500)
-      .json({ success: false, message: 'Tapahtui virhe tokenin verifioinnissa.' })
+    res.status(500).json({ success: false, message: (error as Error).message })
   }
 }
 
 const checkIfAdmin = async (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(' ')[1] as IToken['token']
-  if (!token) throw new Error('Virhe: pyynnössä ei ole mukana tokenia. Kirjaudu sisään.')
-  const decoded = verifyToken(token)
-  if (!decoded) throw new Error('Virhe, kirjaudu uudestaan sisään')
-  const findUser: IUser | null = await User.findOne({ where: { _id: decoded?.userId } })
+  try {
+    const token = req.headers.authorization?.split(' ')[1] as IToken['token']
+    if (!token) throw new Error('Pyynnössä ei ole mukana tokenia. Kirjaudu sisään.')
+    const decoded = verifyToken(token)
+    if (!decoded) throw new Error('Kirjaudu uudestaan sisään')
+    const findUser: IUser | null = await User.findOne({ where: { _id: decoded?.userId } })
 
-  if (findUser && findUser?.role && findUser?.role > 1) {
-    next()
-  } else {
-    res.status(403).json({
-      message: 'Virhe: toimenpide vaatii ylläpitäjän oikeudet.',
-    })
+    if (findUser && findUser?.role && findUser?.role > 1) {
+      next()
+    } else {
+      res.status(403).json({
+        message: `Virhe: toimenpide vaatii ylläpitäjän oikeudet.`,
+      })
+    }
+  } catch (error) {
+    console.error('Error:', error)
+    res.status(500).json({ success: false, message: (error as Error).message })
   }
 }
 
@@ -245,7 +248,7 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
     const user = await User.findOne({ where: { _id: id } })
 
     if (user) {
-      if (user.id === 7) {
+      if (user.role > 2) {
         res.status(400).json({
           success: false,
           message: 'Et voi poistaa tätä käyttäjää.',
@@ -255,21 +258,24 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
       // Find all Palvelu and Kategoria instances that were last edited by the user
       const palvelut = await Palvelu.findAll({ where: { viimeisinMuokkaus: id } })
       const kategoriat = await Kategoria.findAll({ where: { viimeisinMuokkaus: id } })
-      const esittelyt = await Esittely.findAll({ where: { viimeisinMuokkaus: id } }) // New
+      const esittelyt = await Esittely.findAll({ where: { viimeisinMuokkaus: id } })
 
-      // Update the viimeisinMuokkaus field to 7
-      for (const palvelu of palvelut) {
-        palvelu.viimeisinMuokkaus = 7
-        await palvelu.save()
-      }
-      for (const kategoria of kategoriat) {
-        kategoria.viimeisinMuokkaus = 7
-        await kategoria.save()
-      }
-      for (const esittely of esittelyt) {
-        // New
-        esittely.viimeisinMuokkaus = 7
-        await esittely.save()
+      const owner = await User.findOne({ where: { role: 3 } })
+
+      if (owner) {
+        // Update the viimeisinMuokkaus field to  user?.id
+        for (const palvelu of palvelut) {
+          palvelu.viimeisinMuokkaus = owner.id
+          await palvelu.save()
+        }
+        for (const kategoria of kategoriat) {
+          kategoria.viimeisinMuokkaus = owner.id
+          await kategoria.save()
+        }
+        for (const esittely of esittelyt) {
+          esittely.viimeisinMuokkaus = owner.id
+          await esittely.save()
+        }
       }
 
       await user.destroy()
@@ -300,22 +306,27 @@ const authenticateUser = async (
 ): Promise<void> => {
   try {
     const token = req.headers.authorization?.split(' ')[1]
-    if (!token)
-      throw new Error('Virhe: pyynnössä ei ole mukana tokenia. Kirjaudu sisään.')
+    if (!token) throw new Error('Kirjaudu uudestaan sisään. ¤')
 
     const decoded = verifyToken(token)
 
-    if (!decoded) throw new Error('Virhe, kirjaudu uudestaan sisään')
+    if (!decoded) throw new Error('Kirjaudu uudestaan sisään')
     const user: IUser | null = await User.findOne({ where: { _id: decoded?.userId } })
 
-    if (!user) throw new Error('Virhe: Autentikointi epäonnistui.')
+    if (!user) throw new Error('Autentikointi epäonnistui.')
+
+    if (user.role === 0 || user.role === undefined)
+      throw new Error('Käyttäjätilillä ei ole käyttöoikeuksia.')
 
     // Attach user information to the request object
     req.body.user = user
     next()
   } catch (error) {
     console.error('Error:', error)
-    res.status(401).json({ success: false, message: 'Autentikointi epäonnistui' })
+    res.status(401).json({
+      success: false,
+      message: `Virhe! ${(error as Error).message}`,
+    })
   }
 }
 

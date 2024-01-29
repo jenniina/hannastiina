@@ -63,6 +63,7 @@ const Users = ({ user, users, windowWidth }: Props) => {
         dispatch(notify(`Virhe: ${e.response.data.message}`, true, 8))
       })
   }
+
   return (
     <>
       {user?.role && Number(user?.role) > 1 && (
@@ -81,85 +82,115 @@ const Users = ({ user, users, windowWidth }: Props) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {users?.map((u) => {
-                    return (
-                      <tr
-                        key={u?._id}
-                        className={`${u?.role && u.role > 1 ? 'admin' : ''} `}
-                      >
-                        <td>
-                          <span>{u?.name}</span>
-                        </td>
-                        <td>
-                          <span>{u?.username}</span>
-                        </td>
-                        <td>
-                          <span>
-                            {u?.role && u.role > 1 ? 'Hallinnoija' : 'Valtuutettu'}
-                          </span>
-                        </td>
-                        <td>
-                          {user._id !== u._id && Number(u.id) !== 7 && (
-                            <button
-                              className='danger smaller'
-                              onClick={() => {
-                                if (window.confirm(`Poistetaanko ${u.name}?`))
-                                  dispatch(removeUser(u._id))
-                                    .then(() =>
-                                      dispatch(notify('Käyttäjä poistettu', false, 5))
-                                    )
-                                    .then(() => dispatch(initializeUsers()))
-                                    .catch((e) => {
-                                      console.error(e)
-                                      dispatch(
-                                        notify(
-                                          `Virhe: ${e.response.data.message}`,
-                                          true,
-                                          8
-                                        )
-                                      )
-                                    })
-                              }}
-                            >
-                              Poista
-                            </button>
-                          )}
-                        </td>
-                      </tr>
+                  {users
+                    ?.slice()
+                    ?.sort(
+                      (a, b) =>
+                        (Number(b?.role) || 0) - (Number(a?.role) || 0) ||
+                        (Number(a?.id) || 0) - (Number(b?.id) || 0)
                     )
-                  })}
+                    ?.map((u) => {
+                      return (
+                        <tr
+                          key={u?._id}
+                          className={`${u?.role && u.role > 1 ? 'admin' : ''} `}
+                        >
+                          <td>
+                            <span>{u?.name}</span>
+                          </td>
+                          <td>
+                            <span>{u?.username}</span>
+                          </td>
+                          <td>
+                            <span>
+                              {u?.role && Number(u.role) > 2
+                                ? 'Omistaja'
+                                : u?.role && Number(u.role) > 1
+                                ? 'Hallinnoija'
+                                : u?.role && Number(u.role) > 0
+                                ? 'Valtuutettu'
+                                : 'Testaaja'}
+                            </span>
+                          </td>
+                          <td>
+                            {user._id !== u._id && Number(u.role) < 3 && (
+                              <button
+                                className='danger smaller'
+                                onClick={() => {
+                                  if (window.confirm(`Poistetaanko ${u.name}?`))
+                                    dispatch(removeUser(u._id))
+                                      .then(() =>
+                                        dispatch(notify('Käyttäjä poistettu', false, 5))
+                                      )
+                                      .then(() => dispatch(initializeUsers()))
+                                      .catch((e) => {
+                                        console.error(e)
+                                        dispatch(
+                                          notify(
+                                            `Virhe: ${e.response.data.message}`,
+                                            true,
+                                            8
+                                          )
+                                        )
+                                      })
+                                }}
+                              >
+                                Poista
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      )
+                    })}
                 </tbody>
               </table>
             ) : (
               <ul>
-                {users?.map((u) => (
-                  <li key={u?._id} className={`${u?.role && u.role > 1 ? 'admin' : ''} `}>
-                    <span>{u?.name}</span>
-                    <span>({u?.username})</span>
-                    <span>{u?.role && u.role > 1 ? 'Hallinnoija' : ''}</span>
-                    {user._id !== u._id && Number(u.id) !== 7 && (
-                      <button
-                        className='danger smaller'
-                        onClick={() => {
-                          if (window.confirm(`Poistetaanko ${u.name}?`))
-                            dispatch(removeUser(u._id))
-                              .then(() =>
-                                dispatch(notify('Käyttäjä poistettu', false, 5))
-                              )
-                              .then(() => dispatch(initializeUsers()))
-                              .catch((e) => {
-                                console.error(e)
-                                dispatch(
-                                  notify(`Virhe: ${e.response.data.message}`, true, 8)
+                {users
+                  ?.slice()
+                  ?.sort(
+                    (a, b) =>
+                      (Number(b?.role) || 0) - (Number(a?.role) || 0) ||
+                      (Number(a?.id) || 0) - (Number(b?.id) || 0)
+                    //(a?.name || '').localeCompare(b?.name || '')
+                  )
+                  ?.map((u) => (
+                    <li
+                      key={u?._id}
+                      className={`${u?.role && Number(u.role) > 1 ? 'admin' : ''} `}
+                    >
+                      <span>{u?.name}</span>
+                      <span>({u?.username})</span>
+                      <span>
+                        {u?.role && Number(u.role) > 2
+                          ? 'Omistaja'
+                          : u?.role && Number(u.role) > 1
+                          ? 'Hallinnoija'
+                          : ''}
+                      </span>
+                      {user._id !== u._id && Number(u.role) < 3 && (
+                        <button
+                          className='danger smaller'
+                          onClick={() => {
+                            if (window.confirm(`Poistetaanko ${u.name}?`))
+                              dispatch(removeUser(u._id))
+                                .then(() =>
+                                  dispatch(notify('Käyttäjä poistettu', false, 5))
                                 )
-                              })
-                        }}
-                      >
-                        <span>Poista</span>
-                      </button>
-                    )}
-                  </li>
-                ))}
+                                .then(() => dispatch(initializeUsers()))
+                                .catch((e) => {
+                                  console.error(e)
+                                  dispatch(
+                                    notify(`Virhe: ${e.response.data.message}`, true, 8)
+                                  )
+                                })
+                          }}
+                        >
+                          <span>Poista</span>
+                        </button>
+                      )}
+                    </li>
+                  ))}
               </ul>
             )}
 

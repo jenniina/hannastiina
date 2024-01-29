@@ -21,8 +21,6 @@ class User extends Model<UserAttributes> implements UserAttributes {
   public password!: string
   public role!: number
   public token?: string
-  public resetToken?: string
-  public confirmToken?: string
 
   // Other associations or methods can be added here
 
@@ -68,19 +66,11 @@ class User extends Model<UserAttributes> implements UserAttributes {
           allowNull: false,
           defaultValue: 1,
           validate: {
-            min: 1,
-            max: 2,
+            min: 0,
+            max: 3,
           },
         },
         token: {
-          type: DataTypes.STRING,
-          allowNull: true,
-        },
-        resetToken: {
-          type: DataTypes.STRING,
-          allowNull: true,
-        },
-        confirmToken: {
           type: DataTypes.STRING,
           allowNull: true,
         },

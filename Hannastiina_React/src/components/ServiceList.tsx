@@ -179,9 +179,14 @@ const ServiceList = ({ formatDuration, windowWidth }: Props) => {
                             <thead>
                               <tr>
                                 <th className='max-content'>Palvelu</th>
-                                <th className='narrow'>Kesto</th>
+                                {services?.some((service) => service.kesto > 0) && (
+                                  <th className='narrow'>Kesto</th>
+                                )}
                                 <th className='narrow'>Hinta</th>
-                                <th className='kuvaus'>Kuvaus</th>
+                                {services?.some(
+                                  (service) =>
+                                    service.kuvaus && service.kuvaus.trim() !== ''
+                                ) && <th className='kuvaus'>Kuvaus</th>}
                               </tr>
                             </thead>
                             <tbody>
@@ -191,6 +196,11 @@ const ServiceList = ({ formatDuration, windowWidth }: Props) => {
                                   service={service}
                                   formatDuration={formatDuration}
                                   windowWidth={windowWidth}
+                                  kesto={services?.some((service) => service.kesto > 0)}
+                                  kuvaus={services?.some(
+                                    (service) =>
+                                      service.kuvaus && service.kuvaus.trim() !== ''
+                                  )}
                                 />
                               ))}
                             </tbody>
@@ -203,6 +213,11 @@ const ServiceList = ({ formatDuration, windowWidth }: Props) => {
                                 service={service}
                                 formatDuration={formatDuration}
                                 windowWidth={windowWidth}
+                                kesto={services?.some((service) => service.kesto > 0)}
+                                kuvaus={services?.some(
+                                  (service) =>
+                                    service.kuvaus && service.kuvaus.trim() !== ''
+                                )}
                               />
                             ))}
                           </ul>

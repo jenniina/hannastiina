@@ -32,7 +32,8 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (user && user.role && user.role > 1) dispatch(initializeUsers())
+    if (user && user?.role !== undefined && user?.role !== null && Number(user?.role) > 1)
+      dispatch(initializeUsers())
   }, [user])
 
   const ref = useOutsideClick({ onOutsideClick: closing })
@@ -74,16 +75,18 @@ function App() {
             <>
               <div className='top-links'>
                 <div>
-                  {user?.role && Number(user?.role) > 1 && (
-                    <button
-                      onClick={(e) => {
-                        handleScrollToElement(e, 'kayttajat')
-                      }}
-                    >
-                      <span>Käyttäjät</span>
-                      <span className='around'>&#xFE3D;</span>
-                    </button>
-                  )}
+                  {user?.role !== undefined &&
+                    user?.role !== null &&
+                    Number(user?.role) > 1 && (
+                      <button
+                        onClick={(e) => {
+                          handleScrollToElement(e, 'kayttajat')
+                        }}
+                      >
+                        <span>Käyttäjät</span>
+                        <span className='around'>&#xFE3D;</span>
+                      </button>
+                    )}
                   <button
                     onClick={(e) => {
                       handleScrollToElement(e, 'kategoriat')
@@ -105,11 +108,17 @@ function App() {
             </>
           )}
           <Intro user={user} />
-          {!user && <Map />}
-          {user && user.role && user.role > 1 && (
-            <Users user={user} users={users} windowWidth={windowWidth} />
-          )}
-          {user && user.role && user.role > 1 && <CategoryEdit user={user} />}
+          {!user && <Map windowHeight={windowHeight} />}
+          {user &&
+            user?.role !== undefined &&
+            user?.role !== null &&
+            Number(user?.role) > 1 && (
+              <Users user={user} users={users} windowWidth={windowWidth} />
+            )}
+          {user &&
+            user?.role !== undefined &&
+            user?.role !== null &&
+            Number(user?.role) > 1 && <CategoryEdit user={user} />}
           {user ? (
             <ServiceEdit
               user={user}
