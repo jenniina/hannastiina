@@ -199,7 +199,7 @@ const Users = ({ user, users, windowWidth }: Props) => {
               </table>
             ) : (
               <ul>
-                {user && Number(user?.role) !== 1 ? (
+                {user && Number(user?.role) > 1 ? (
                   users
                     ?.slice()
                     ?.sort(
@@ -251,7 +251,32 @@ const Users = ({ user, users, windowWidth }: Props) => {
                       </li>
                     ))
                 ) : (
-                  <li>testi</li>
+                  <>
+                    <li>
+                      <span>Admin</span>
+                      <span>(admin@hannastii.na)</span>
+                      <span>Hallinnoija</span>
+                    </li>
+                    <li>
+                      <span>Testaaja</span>
+                      <span>(testi@testaaja.fi)</span>
+                      <span>Testaaja</span>
+                    </li>
+                    <li>
+                      <span>Tester</span>
+                      <span>(tester@test.ing)</span>
+                      <span>Testaaja</span>
+                      <button
+                        className='danger smaller'
+                        onClick={() => {
+                          if (window.confirm(`Poistetaanko Tester?`))
+                            dispatch(notify('Käyttäjää ei voi poistaa', true, 5))
+                        }}
+                      >
+                        Poista
+                      </button>
+                    </li>
+                  </>
                 )}
               </ul>
             )}
