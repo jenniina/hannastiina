@@ -384,7 +384,13 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
                 <div className='input-wrap'>
                   <label htmlFor='name'>Palvelun nimi</label>
                   <span className='input'>
-                    <input required id='name' value={name} onChange={handleNameChange} />
+                    <input
+                      required
+                      autoComplete='off'
+                      id='name'
+                      value={name}
+                      onChange={handleNameChange}
+                    />
                   </span>
                 </div>
                 <div className='input-wrap'>

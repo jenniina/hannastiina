@@ -371,6 +371,7 @@ const Users = ({ user, users, windowWidth }: Props) => {
                     id='name-change'
                     type='text'
                     name='name'
+                    autoComplete='name'
                     value={user_name}
                     onChange={({ target }) => setUser_name(target.value)}
                   />
@@ -423,8 +424,9 @@ const Users = ({ user, users, windowWidth }: Props) => {
                 <span className='input'>
                   <input
                     id='username-change'
-                    type='text'
+                    type='email'
                     name='username'
+                    autoComplete='email'
                     value={user_username}
                     onChange={({ target }) => setUser_username(target.value)}
                   />
@@ -452,8 +454,9 @@ const Users = ({ user, users, windowWidth }: Props) => {
                 <span className='input'>
                   <input
                     id='username-create'
-                    type='text'
+                    type='email'
                     name='username'
+                    autoComplete='email'
                     value={username}
                     onChange={({ target }) => setUsername(target.value)}
                   />
@@ -467,6 +470,7 @@ const Users = ({ user, users, windowWidth }: Props) => {
                     type='text'
                     name='name'
                     value={name}
+                    autoComplete='name'
                     onChange={({ target }) => setName(target.value)}
                   />
                 </span>

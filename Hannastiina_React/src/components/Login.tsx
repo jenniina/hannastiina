@@ -98,9 +98,10 @@ const Login = ({ setIsFormOpen, isOpen, text }: LoginProps) => {
                   <span className='input'>
                     <input
                       name='username'
-                      type='text'
+                      type='email'
                       value={username}
                       required
+                      autoComplete='email'
                       onChange={({ target }) => setUsername(target.value)}
                     />
                   </span>

@@ -350,10 +350,10 @@ const CategoryEdit = ({ user }: Props) => {
               />
 
               <div className='input-wrap'>
-                <label htmlFor='category-edit'>Kategorian nimi: </label>
+                <label htmlFor='category-edit-name'>Kategorian nimi: </label>
                 <span className='input'>
                   <input
-                    id='category-edit'
+                    id='category-edit-name'
                     value={name}
                     onChange={(e) => {
                       setName(e.target.value)

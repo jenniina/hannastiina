@@ -85,6 +85,7 @@ const Intro = ({ user }: Props) => {
                 : 'Lisää esittelyteksti:'}
             </label>
             <textarea
+              id='intro'
               name='intro'
               rows={5}
               value={introText}
