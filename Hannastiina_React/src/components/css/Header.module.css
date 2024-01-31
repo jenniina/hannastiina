@@ -103,7 +103,7 @@ header nav.main ul li.services button svg {
   font-size: 1.5em;
 }
 header nav.main ul li.contact button svg {
-  transform: rotate(15deg);
+  transform: rotate(-10deg);
 }
 header nav.main ul li button svg,
 header nav.main ul button:hover,
