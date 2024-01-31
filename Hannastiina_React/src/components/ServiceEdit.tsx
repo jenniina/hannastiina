@@ -143,9 +143,7 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
         tarkennus: detail,
         hinta: Number(price.replace(',', '.')),
         hinta2:
-          Number(price2.replace(',', '.')) === 0
-            ? null
-            : Number(price2.replace(',', '.')),
+          Number(price2.replace(',', '.')) == 0 ? null : Number(price2.replace(',', '.')),
         kesto: duration,
         kuvaus: description,
         viimeisinMuokkaus: user?.id as number,
@@ -243,7 +241,7 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
 
   const handleEditService = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    if (price >= price2) {
+    if (Number(price) >= Number(price2)) {
       dispatch(notify('Minimihinnan tulee olla pienempi kuin maksimihinnan', true, 5))
       return
     } else {
@@ -253,9 +251,7 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
         tarkennus: detail,
         hinta: Number(price.replace(',', '.')),
         hinta2:
-          Number(price2.replace(',', '.')) === 0
-            ? null
-            : Number(price2.replace(',', '.')),
+          Number(price2.replace(',', '.')) == 0 ? null : Number(price2.replace(',', '.')),
         kesto: duration,
         kuvaus: description,
         viimeisinMuokkaus: user?.id as number,
@@ -469,12 +465,28 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
                     if (services?.length === 0 && searchName !== '') {
                       return null // Don't render the category if there are no services
                     }
+                    const foundCategory = categories.find(
+                      (cat) => cat.kategoria.toLowerCase() === category.toLowerCase()
+                    )
                     const firstLetter = category?.charAt(0)?.toUpperCase() ?? ''
                     const rest = category?.slice(1) ?? ''
                     const kategoria = `${firstLetter}${rest}`
                     return (
                       <li key={category} className={`kategoria`}>
                         <h3>{kategoria}</h3>
+                        {foundCategory?.info && (
+                          <strong className='info'>
+                            Tarkenne: {foundCategory.info}{' '}
+                            <button
+                              className='smaller'
+                              onClick={(e) => {
+                                handleScrollToElement(e, 'muokkaa-kategoriaa')
+                              }}
+                            >
+                              Muokkaa
+                            </button>
+                          </strong>
+                        )}
                         <ul
                           className={`palvelut`}
                           onDragOver={(e) => {
