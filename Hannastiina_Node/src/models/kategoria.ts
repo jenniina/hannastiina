@@ -5,6 +5,7 @@ import Kayttaja from './user'
 class Kategoria extends Model {
   public id!: number
   public kategoria!: number
+  public info!: string
   public orderIndex!: number
   public viimeisinMuokkaus!: number
 }
@@ -19,6 +20,10 @@ Kategoria.init(
     kategoria: {
       type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    info: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     orderIndex: {
       type: DataTypes.INTEGER,
