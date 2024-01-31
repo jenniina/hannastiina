@@ -319,7 +319,7 @@ const CategoryEdit = ({ user }: Props) => {
           <button type='submit'>Lisää kategoria</button>
         </form>
 
-        <h3>Muokkaa kategoriaa</h3>
+        <h3 id='muokkaa-kategoriaa'>Muokkaa kategoriaa</h3>
         <form
           className='edit-category'
           onSubmit={(e) => {
