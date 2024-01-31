@@ -170,7 +170,6 @@ const ServiceList = ({ formatDuration, windowWidth }: Props) => {
                     const foundCategory = categories.find(
                       (cat) => cat.kategoria.toLowerCase() === category.toLowerCase()
                     )
-                    console.log(foundCategory)
                     const firstLetter = category?.charAt(0)?.toUpperCase() ?? ''
                     const rest = category?.slice(1) ?? ''
                     const kategoria = `${firstLetter}${rest}`
