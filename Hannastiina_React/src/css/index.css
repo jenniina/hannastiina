@@ -254,6 +254,7 @@ a:hover {
 button {
   border-radius: 8px;
   border: 3px solid var(--pink-light);
+  border-bottom-color: var(--pink);
   outline: 6px solid hsla(var(--hue), var(--sat), 70%, 0.3);
   outline-offset: -6px;
   padding: 0.5em 1em;
@@ -282,6 +283,7 @@ button:focus-visible {
 }
 button:focus-visible {
   border-color: var(--pink-dark);
+  border-bottom-color: var(--dark);
 }
 button.reset {
   border: 0;
