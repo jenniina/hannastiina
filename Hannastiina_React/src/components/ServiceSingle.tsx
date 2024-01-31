@@ -31,12 +31,23 @@ const ServiceSingle: React.FC<IServiceSingleProps> = ({
           {kesto && (
             <td>
               <span>
-                {Number(service.kesto) === 0 ? '' : formatDuration(service.kesto)}
+                {Number(service.kesto) === 0 ? '' : 'n. ' + formatDuration(service.kesto)}
               </span>
             </td>
           )}
           <td>
-            <span>{service.hinta.toString().replace('.', ',')} €</span>
+            <span>
+              {service.hinta2 !== null ? (
+                <>
+                  {service.hinta}
+                  &ndash;
+                  {service.hinta2}
+                </>
+              ) : (
+                service.hinta
+              )}{' '}
+              €
+            </span>
           </td>
           {kuvaus && (
             <td className='kuvaus'>
@@ -58,8 +69,21 @@ const ServiceSingle: React.FC<IServiceSingleProps> = ({
             <span>{service.tarkennus}</span>
           </div>
           <div>
-            <span>{formatDuration(service.kesto)}</span>
-            <span>{service.hinta.toString().replace('.', ',')} €</span>
+            <span>
+              {Number(service.kesto) === 0 ? '' : 'n. ' + formatDuration(service.kesto)}
+            </span>
+            <span>
+              {service.hinta2 !== null ? (
+                <>
+                  {service.hinta}
+                  &ndash;
+                  {service.hinta2}
+                </>
+              ) : (
+                service.hinta
+              )}{' '}
+              €
+            </span>
           </div>
           {kuvausTeksti[0] !== '' && (
             <div>

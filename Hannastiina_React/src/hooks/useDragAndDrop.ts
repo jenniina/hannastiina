@@ -39,15 +39,6 @@ export const useDragAndDrop = (initialState: IService[]) => {
         console.error(`Category with id ${dragId} not found`)
         return
       }
-      if (
-        dragId < 0 ||
-        dragId >= orderedCategories.length + 1 ||
-        hoverId < 0 ||
-        hoverId >= orderedCategories.length + 1
-      ) {
-        console.error('Invalid drag or hover index')
-        return
-      }
       const dragCategory = orderedCategories[draggedCategoryIndex]
       const newCategories = [...orderedCategories]
       newCategories.splice(draggedCategoryIndex, 1)

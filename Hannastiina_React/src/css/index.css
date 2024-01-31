@@ -630,8 +630,11 @@ div.edit ul.palvelut form .input-wrap .input {
 #root .gap {
   gap: var(--gap);
 }
-table {
+table,
+.info {
   --padd: 0.5rem;
+}
+table {
   border-collapse: collapse;
   width: 100%;
 }
@@ -658,8 +661,16 @@ td > span > span {
   line-height: 1.2;
 }
 
-td > span {
+td > span,
+.info {
   padding: 0.4em 0 0.3em calc(var(--padd) * 2);
+}
+.info {
+  display: inline-block;
+  font-style: italic;
+  text-align: left;
+  margin: 0;
+  width: 100%;
 }
 th.max-content,
 td.max-content {

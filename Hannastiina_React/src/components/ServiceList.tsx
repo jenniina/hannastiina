@@ -23,7 +23,7 @@ const ServiceList = ({ formatDuration, windowWidth }: Props) => {
 
   const [filterBy, setFilterBy] = useState('')
   const [min, setMin] = useState(0)
-  const [max, setMax] = useState(100)
+  const [max, setMax] = useState(300)
   const [searchName, setSearchName] = useState('')
 
   interface CategoryItems {
@@ -80,7 +80,7 @@ const ServiceList = ({ formatDuration, windowWidth }: Props) => {
     event.preventDefault()
     setSearchName('')
     setMin(0)
-    setMax(100)
+    setMax(300)
     setFilterBy('')
     dispatch(fetchServices()).catch((error) => console.error(error))
 
@@ -167,12 +167,20 @@ const ServiceList = ({ formatDuration, windowWidth }: Props) => {
                     if (services?.length === 0) {
                       return null // Don't render the category if there are no services
                     }
+                    const foundCategory = categories.find(
+                      (cat) => cat.kategoria.toLowerCase() === category.toLowerCase()
+                    )
+                    console.log(foundCategory)
                     const firstLetter = category?.charAt(0)?.toUpperCase() ?? ''
                     const rest = category?.slice(1) ?? ''
                     const kategoria = `${firstLetter}${rest}`
                     return (
                       <li key={category} className={`kategoria`}>
                         <h3>{kategoria}</h3>
+
+                        {foundCategory?.info && (
+                          <strong className='info'>{foundCategory.info}</strong>
+                        )}
 
                         {windowWidth > 800 ? (
                           <table>

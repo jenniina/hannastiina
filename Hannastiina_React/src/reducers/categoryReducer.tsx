@@ -22,7 +22,7 @@ export const fetchCategories = createAsyncThunk(
 export const addCategory = createAsyncThunk(
   'categories/addCategory',
   async (
-    category: { kategoria: string; viimeisinMuokkaus: number },
+    category: { kategoria: string; info: string; viimeisinMuokkaus: number },
     { rejectWithValue }
   ) => {
     try {

@@ -57,6 +57,17 @@ form .third {
 form .nowrap {
   white-space: nowrap;
 }
+form.edit-category {
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 0.8em;
+  width: 100%;
+}
+form.edit-category .category-select {
+  width: 100%;
+  margin: 0;
+}
 fieldset:not(:last-of-type) {
   border-bottom: 1px dashed var(--silver);
 }

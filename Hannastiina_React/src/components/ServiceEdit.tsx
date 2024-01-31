@@ -56,8 +56,9 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
   const [name, setName] = useState('')
   const [detail, setDetail] = useState('')
   const [price, setPrice] = useState('')
+  const [price2, setPrice2] = useState('')
   const [min, setMin] = useState(0)
-  const [max, setMax] = useState(100)
+  const [max, setMax] = useState(300)
   const [searchName, setSearchName] = useState('')
   const [duration, setDuration] = useState(0)
   const [description, setDescription] = useState('')
@@ -103,7 +104,15 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
   }
   const handlePriceChange = (event: ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
-    setPrice(value.replace(',', '.'))
+    if (!isNaN(Number(value.replace(',', '.')))) {
+      setPrice(value.replace(',', '.'))
+    }
+  }
+  const handlePrice2Change = (event: ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value
+    if (!isNaN(Number(value.replace(',', '.')))) {
+      setPrice2(value.replace(',', '.'))
+    }
   }
 
   const handleDurationChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -118,32 +127,47 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
 
   const handleAddService = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const newService: IService = {
-      nimi: name,
-      kategoria: category_?.value as number,
-      tarkennus: detail,
-      hinta: Number(price.replace(',', '.')),
-      kesto: duration,
-      kuvaus: description,
-      viimeisinMuokkaus: user?.id as number,
-    }
-    await dispatch(addService(newService))
-      .then((result) => {
-        if (result.type === 'services/addService/rejected') {
-          if ('payload' in result && result.payload !== undefined) {
-            dispatch(notify(`Tapahtui virhe! ${result.payload}`, true, 8))
-          }
-          dispatch(fetchServices())
-          return
-        } else dispatch(notify('Palvelu lisätty', false, 3))
+    if (name.trim() === '') {
+      dispatch(notify('Palvelun nimi ei voi olla tyhjä', true, 5))
+      return
+    } else if (price.trim() === '') {
+      dispatch(notify('Palvelun hinta ei voi olla tyhjä', true, 5))
+      return
+    } else if (Number(price) >= Number(price2)) {
+      dispatch(notify('Minimihinnan tulee olla pienempi kuin maksimihinnan', true, 5))
+      return
+    } else {
+      const newService: IService = {
+        nimi: name,
+        kategoria: category_?.value as number,
+        tarkennus: detail,
+        hinta: Number(price.replace(',', '.')),
+        hinta2:
+          Number(price2.replace(',', '.')) === 0
+            ? null
+            : Number(price2.replace(',', '.')),
+        kesto: duration,
+        kuvaus: description,
+        viimeisinMuokkaus: user?.id as number,
+      }
+      await dispatch(addService(newService))
+        .then((result) => {
+          if (result.type === 'services/addService/rejected') {
+            if ('payload' in result && result.payload !== undefined) {
+              dispatch(notify(`${result.payload}`, true, 8))
+            }
+            dispatch(fetchServices())
+            return
+          } else dispatch(notify('Palvelu lisätty', false, 3))
 
-        resetPlus()
-        dispatch(fetchServices())
-      })
-      .catch((error) => {
-        console.error(error)
-        dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 5))
-      })
+          resetPlus()
+          dispatch(fetchServices())
+        })
+        .catch((error) => {
+          console.error(error)
+          dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 5))
+        })
+    }
   }
 
   const mapCategoriesToOptions = useCallback(
@@ -171,6 +195,7 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
     setCategory(options[0])
     setDetail('')
     setPrice('')
+    setPrice2('')
     setDuration(0)
     setDescription('')
   }
@@ -205,7 +230,7 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
         .then((result) => {
           if (result.type === 'services/deleteService/rejected') {
             if ('payload' in result && result.payload !== undefined) {
-              dispatch(notify(`Tapahtui virhe! ${result.payload}`, true, 8))
+              dispatch(notify(`${result.payload}`, true, 8))
             }
           } else dispatch(notify('Palvelu poistettu', false, 3))
           dispatch(fetchServices())
@@ -218,32 +243,41 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
 
   const handleEditService = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const editedService: IService = {
-      nimi: name,
-      kategoria: category_?.value as number,
-      tarkennus: detail,
-      hinta: Number(price.replace(',', '.')),
-      kesto: duration,
-      kuvaus: description,
-      viimeisinMuokkaus: user?.id as number,
-    }
-    dispatch(updateService({ id: editId, newObject: editedService }))
-      .then((result) => {
-        if (result.type === 'services/updateService/rejected') {
-          if ('payload' in result && result.payload !== undefined) {
-            dispatch(notify(`Tapahtui virhe! ${result.payload}`, true, 8))
-          }
-          dispatch(fetchServices())
-          return
-        } else dispatch(notify('Palvelu päivitetty', false, 3))
+    if (price >= price2) {
+      dispatch(notify('Minimihinnan tulee olla pienempi kuin maksimihinnan', true, 5))
+      return
+    } else {
+      const editedService: IService = {
+        nimi: name,
+        kategoria: category_?.value as number,
+        tarkennus: detail,
+        hinta: Number(price.replace(',', '.')),
+        hinta2:
+          Number(price2.replace(',', '.')) === 0
+            ? null
+            : Number(price2.replace(',', '.')),
+        kesto: duration,
+        kuvaus: description,
+        viimeisinMuokkaus: user?.id as number,
+      }
+      dispatch(updateService({ id: editId, newObject: editedService }))
+        .then((result) => {
+          if (result.type === 'services/updateService/rejected') {
+            if ('payload' in result && result.payload !== undefined) {
+              dispatch(notify(`${result.payload}`, true, 8))
+            }
+            dispatch(fetchServices())
+            return
+          } else dispatch(notify('Palvelu päivitetty', false, 3))
 
-        resetPlus()
-        dispatch(fetchServices())
-      })
-      .catch((error) => {
-        console.error(error)
-        dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 5))
-      })
+          resetPlus()
+          dispatch(fetchServices())
+        })
+        .catch((error) => {
+          console.error(error)
+          dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 5))
+        })
+    }
   }
 
   useEffect(() => {
@@ -317,7 +351,7 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
               onClick={() => {
                 setFilterBy('')
                 setMin(0)
-                setMax(100)
+                setMax(300)
                 setSearchName('')
               }}
             >
@@ -354,7 +388,7 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
                 <div className='input-wrap'>
                   <label htmlFor='name'>Palvelun nimi</label>
                   <span className='input'>
-                    <input id='name' value={name} onChange={handleNameChange} />
+                    <input required id='name' value={name} onChange={handleNameChange} />
                   </span>
                 </div>
                 <div className='input-wrap'>
@@ -368,13 +402,27 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
                   </span>
                 </div>
                 <div className='input-wrap'>
-                  <label htmlFor='price'>Palvelun hinta (€)</label>
+                  <label htmlFor='price'>Palvelun hinta tai minimihinta (€)</label>
                   <span className='input'>
                     <input
+                      required
                       id='price'
                       type='text'
                       value={price}
                       onChange={handlePriceChange}
+                      pattern='^[0-9]*[.,]?[0-9]*$'
+                    />
+                  </span>
+                </div>
+                <div className='input-wrap'>
+                  <label htmlFor='price2'>Palvelun maksimihinta (€)</label>
+                  <span className='input'>
+                    <input
+                      id='price2'
+                      type='text'
+                      value={price2}
+                      onChange={handlePrice2Change}
+                      pattern='^[0-9]*[.,]?[0-9]*$'
                     />
                   </span>
                 </div>
@@ -460,106 +508,70 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
                             onDrop(Number(draggedId), category, newTargetIndex)
                           }}
                         >
-                          {services?.length === 0 ? (
-                            <li className='empty'>
-                              <button
-                                className='reset'
-                                onClick={(e) => {
-                                  setAddOpen(true)
-                                  handleScrollToElement(e, 'add-service-container')
-                                }}
-                              >
-                                Lisää palvelu
-                              </button>{' '}
+                          {services?.map((service) => (
+                            <li
+                              className={`${editOpen ? 'open' : ''}`}
+                              key={service?.id}
+                              draggable={editId === service.id && editOpen ? false : true}
+                              onDragStart={(e) => {
+                                e.dataTransfer.setData(
+                                  'application/my-app',
+                                  service?.id?.toString() as string
+                                )
+                                e.dataTransfer.effectAllowed = 'move'
+                                handleDragging(true)
+                              }}
+                              onDragEnd={() => handleDragging(false)}
+                            >
+                              <ServiceSingleEdit
+                                service={service}
+                                editOpen={editOpen}
+                                setEditOpen={setEditOpen}
+                                setAddOpen={setAddOpen}
+                                editId={editId}
+                                setEditId={setEditId}
+                                setName={setName}
+                                setCategory={setCategory}
+                                setDetail={setDetail}
+                                setPrice={setPrice}
+                                setDuration={setDuration}
+                                setDescription={setDescription}
+                                handleEditService={handleEditService}
+                                handleDelete={handleDelete}
+                                formatDuration={formatDuration}
+                                name={name}
+                                category={category_}
+                                detail={detail}
+                                price={price}
+                                price2={price2}
+                                duration={duration}
+                                description={description}
+                                options={options}
+                                categories={categories}
+                                handleNameChange={handleNameChange}
+                                handlePriceChange={handlePriceChange}
+                                handlePrice2Change={handlePrice2Change}
+                                handleDurationChange={handleDurationChange}
+                                handleDescriptionChange={handleDescriptionChange}
+                              />
                             </li>
-                          ) : (
-                            services?.map((service) => (
-                              <li
-                                className={`${editOpen ? 'open' : ''}`}
-                                key={service?.id}
-                                draggable
-                                onDragStart={(e) => {
-                                  e.dataTransfer.setData(
-                                    'application/my-app',
-                                    service?.id?.toString() as string
-                                  )
-                                  e.dataTransfer.effectAllowed = 'move'
-                                  handleDragging(true)
-                                }}
-                                onDragEnd={() => handleDragging(false)}
-                              >
-                                <ServiceSingleEdit
-                                  service={service}
-                                  editOpen={editOpen}
-                                  setEditOpen={setEditOpen}
-                                  setAddOpen={setAddOpen}
-                                  editId={editId}
-                                  setEditId={setEditId}
-                                  setName={setName}
-                                  setCategory={setCategory}
-                                  setDetail={setDetail}
-                                  setPrice={setPrice}
-                                  setDuration={setDuration}
-                                  setDescription={setDescription}
-                                  handleEditService={handleEditService}
-                                  handleDelete={handleDelete}
-                                  formatDuration={formatDuration}
-                                  name={name}
-                                  category={category_}
-                                  detail={detail}
-                                  price={price}
-                                  duration={duration}
-                                  description={description}
-                                  options={options}
-                                  categories={categories}
-                                  handleNameChange={handleNameChange}
-                                  handlePriceChange={handlePriceChange}
-                                  handleDurationChange={handleDurationChange}
-                                  handleDescriptionChange={handleDescriptionChange}
-                                />
-                              </li>
-                            ))
-                          )}
+                          ))}
+                          <li className='empty'>
+                            <button
+                              className='reset'
+                              onClick={(e) => {
+                                setAddOpen(true)
+                                handleScrollToElement(e, 'add-service-container')
+                              }}
+                            >
+                              Lisää palvelu
+                            </button>
+                          </li>
                         </ul>
                       </li>
                     )
                   }
                 )}
-
-              {/* {filteredServices?.map((service) => {
-              return (
-                <ServiceByCategory
-                  key={service.id}
-                  services={services}
-                  editOpen={editOpen}
-                  setEditOpen={setEditOpen}
-                  setAddOpen={setAddOpen}
-                  editId={editId}
-                  setEditId={setEditId}
-                  setName={setName}
-                  setCategory={setCategory}
-                  setDetail={setDetail}
-                  setPrice={setPrice}
-                  setDuration={setDuration}
-                  setDescription={setDescription}
-                  handleEditService={handleEditService}
-                  handleDelete={handleDelete}
-                  formatDuration={formatDuration}
-                  name={name}
-                  category_={category}
-                  detail={detail}
-                  price={price}
-                  duration={duration}
-                  description={description}
-                  options={options}
-                  categories={categories}
-                  handleNameChange={handleNameChange}
-                  handlePriceChange={handlePriceChange}
-                  handleDurationChange={handleDurationChange}
-                  handleDescriptionChange={handleDescriptionChange}
-                />
-              )
-            })} */}
             </>
           )}
         </ul>

@@ -9,7 +9,7 @@ import {
   deleteCategory,
 } from '../reducers/categoryReducer'
 import { fetchOrderBy } from '../reducers/orderByReducer'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, FormEvent } from 'react'
 import { IService, IReducers, IClosestItem, ICategory, IUser } from '../types'
 import { useDragAndDrop } from '../hooks/useDragAndDrop'
 import { notify } from '../reducers/notificationReducer'
@@ -33,7 +33,7 @@ const CategoryEdit = ({ user }: Props) => {
 
   const mapCategoriesToOptions = useCallback(
     (categories: ICategory[]) => {
-      return categories?.map((category) => {
+      const options = categories?.map((category) => {
         const cat = categories?.find((c) => c?.id === category?.id)
         const firstLetter = cat?.kategoria?.charAt(0)?.toUpperCase() ?? ''
         const rest = cat?.kategoria.slice(1) ?? ''
@@ -43,6 +43,10 @@ const CategoryEdit = ({ user }: Props) => {
           label: kategoria,
         }
       }) as SelectOption[]
+
+      options.unshift({ value: '', label: 'Valitse kategoria' })
+
+      return options
     },
     [categories]
   )
@@ -80,15 +84,12 @@ const CategoryEdit = ({ user }: Props) => {
   })
 
   useEffect(() => {
-    setCategory(options[0])
-  }, [categories])
-
-  useEffect(() => {
     setEmptyCategory(emptyOptions[0])
   }, [listItemsByCategory])
 
   const [name, setName] = useState('')
   const [newName, setNewName] = useState('')
+  const [info, setInfo] = useState(categories?.[0]?.info as string)
   const [categoryObject, setCategoryObject] = useState<ICategory>(
     categories?.[0] as ICategory
   )
@@ -145,6 +146,48 @@ const CategoryEdit = ({ user }: Props) => {
       })
     }, 500)
   }, [categories, listItemsByCategory])
+
+  const editCategory = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (category_.value === '') {
+      dispatch(notify(`Valitse kategoria`, true, 4))
+      return
+    } else if (
+      categories.some(
+        (category) => category.kategoria?.toLowerCase() === name?.toLowerCase()
+      )
+    ) {
+      dispatch(notify(`Kategorian nimi on jo ${name}`, true, 4))
+      return
+    } else if (categoryObject?.kategoria?.trim() === '') {
+      dispatch(notify(`Kategorian nimi ei voi olla tyhjä`, true, 4))
+      return
+    } else {
+      await dispatch(
+        updateCategory({
+          id: categoryObject?.id as number,
+          category: categoryObject as ICategory,
+        })
+      )
+        .then((result) => {
+          if (result.type === 'categories/updateCategory/rejected') {
+            if ('payload' in result && result.payload !== undefined) {
+              dispatch(notify(`${result.payload}`, true, 8))
+            }
+          } else dispatch(notify('Kategoria muutettu', false, 3))
+          dispatch(fetchServices())
+        })
+        .then(() => dispatch(fetchCategories()))
+        .then(() => {
+          setCategory(options[0])
+          setName('')
+        })
+        .catch((error) => {
+          console.error(error)
+          dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 4))
+        })
+    }
+  }
 
   return (
     <div className='edit'>
@@ -229,14 +272,23 @@ const CategoryEdit = ({ user }: Props) => {
               dispatch(
                 addCategory({
                   kategoria: newName?.toLowerCase(),
+                  info: info,
                   viimeisinMuokkaus: user?.id as number,
                 })
               )
+                .then((result) => {
+                  if (result.type === 'categories/addCategory/rejected') {
+                    if ('payload' in result && result.payload !== undefined) {
+                      dispatch(notify(`${result.payload}`, true, 8))
+                    }
+                  } else dispatch(notify('Kategoria lisätty onnistuneesti', false, 3))
+                  dispatch(fetchServices())
+                })
                 .then(() => {
                   dispatch(fetchCategories())
                   setNewName('')
+                  setInfo('')
                 })
-                .then(() => dispatch(notify(`Kategoria lisätty onnistuneesti`, false, 4)))
                 .catch((error) => {
                   console.error(error)
                   dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 4))
@@ -254,43 +306,28 @@ const CategoryEdit = ({ user }: Props) => {
               />
             </span>
           </div>
+          <div className='input-wrap'>
+            <label htmlFor='category-info'>Kategorian kuvaus: </label>
+            <span className='input'>
+              <input
+                id='category-info'
+                value={info}
+                onChange={(e) => setInfo(e.target.value)}
+              />
+            </span>
+          </div>
           <button type='submit'>Lisää kategoria</button>
         </form>
 
-        <h3>Muokkaa kategorian nimeä</h3>
+        <h3>Muokkaa kategoriaa</h3>
         <form
+          className='edit-category'
           onSubmit={(e) => {
-            if (categoryObject?.kategoria?.toLowerCase() === name?.toLowerCase()) {
-              dispatch(notify(`Kategorian nimi on jo ${name}`, true, 4))
-              return
-            } else if (categoryObject?.kategoria?.trim() === '') {
-              dispatch(notify(`Kategorian nimi ei voi olla tyhjä`, true, 4))
-              return
-            } else {
-              e.preventDefault()
-              dispatch(
-                updateCategory({
-                  id: categoryObject?.id as number,
-                  category: categoryObject as ICategory,
-                })
-              )
-                .then(() => dispatch(fetchCategories()))
-                .then(() => {
-                  setCategory(options[0])
-                  setName('')
-                })
-                .then(() =>
-                  dispatch(notify(`Kategorian nimi muutettu onnistuneesti`, false, 4))
-                )
-                .catch((error) => {
-                  console.error(error)
-                  dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 4))
-                })
-            }
+            editCategory(e)
           }}
         >
           {categories?.length > 0 && (
-            <div>
+            <>
               <Select
                 className='category-select'
                 id='category-edit'
@@ -298,6 +335,10 @@ const CategoryEdit = ({ user }: Props) => {
                 onChange={(o) => {
                   setCategory(o as SelectOption)
                   setName(o?.label?.toLowerCase() as string)
+                  setInfo(
+                    (categories?.find((c) => c?.id === o?.value) as ICategory)
+                      ?.info as string
+                  )
                   setCategoryObject({
                     ...(categories?.find((c) => c?.id === o?.value) as ICategory),
                     viimeisinMuokkaus: user?.id as number,
@@ -325,8 +366,25 @@ const CategoryEdit = ({ user }: Props) => {
                   />
                 </span>
               </div>
+              <div className='input-wrap'>
+                <label htmlFor='category-edit-info'>Kategorian kuvaus: </label>
+                <span className='input'>
+                  <input
+                    id='category-edit-info'
+                    value={info}
+                    onChange={(e) => {
+                      setInfo(e.target.value)
+                      setCategoryObject({
+                        ...categoryObject,
+                        info: e.target.value as string,
+                        viimeisinMuokkaus: user?.id as number,
+                      })
+                    }}
+                  />
+                </span>
+              </div>
               <button type='submit'>Tallenna</button>
-            </div>
+            </>
           )}
         </form>
 

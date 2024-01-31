@@ -43,7 +43,7 @@ const Intro = ({ user }: Props) => {
         .then((result) => {
           if (result.type === 'intro/updateIntro/rejected') {
             if ('payload' in result && result.payload !== undefined) {
-              dispatch(notify(`Tapahtui virhe! ${result.payload}`, true, 8))
+              dispatch(notify(`${result.payload}`, true, 8))
             }
           } else dispatch(notify('Esittely päivitetty', false, 3))
         })
@@ -86,6 +86,7 @@ const Intro = ({ user }: Props) => {
             </label>
             <textarea
               name='intro'
+              rows={5}
               value={introText}
               onChange={(e) => setIntroText(e.target.value)}
             />

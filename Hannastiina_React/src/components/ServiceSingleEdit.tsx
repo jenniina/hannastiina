@@ -24,9 +24,11 @@ interface IServiceSingleProps {
   handleNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   detail: string
   price: string
+  price2: string
   duration: number
   description: string
   handlePriceChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+  handlePrice2Change: (event: React.ChangeEvent<HTMLInputElement>) => void
   handleDurationChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   handleDescriptionChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void
   formatDuration: (minutes: number) => string
@@ -54,9 +56,11 @@ const ServiceSingleEdit: React.FC<IServiceSingleProps> = ({
   handleNameChange,
   detail,
   price,
+  price2,
   duration,
   description,
   handlePriceChange,
+  handlePrice2Change,
   handleDurationChange,
   handleDescriptionChange,
   formatDuration,
@@ -74,14 +78,29 @@ const ServiceSingleEdit: React.FC<IServiceSingleProps> = ({
           <span>Tarkennus</span>
           <span>{service.tarkennus}</span>
         </div>
-        <div>
-          <span>Hinta</span>
-          <span>{service.hinta.toString().replace('.', ',')} €</span>
-        </div>
-        <div>
-          <span>Kesto</span>
-          <span>{formatDuration(service.kesto)}</span>
-        </div>
+        {service.hinta2 !== null ? (
+          <>
+            <div>
+              <span>Minimihinta</span>
+              <span>{service.hinta} €</span>
+            </div>
+            <div>
+              <span>Maksimihinta</span>
+              <span>{service.hinta2} €</span>
+            </div>
+          </>
+        ) : (
+          <div>
+            <span>Hinta</span>
+            <span>{service.hinta} €</span>
+          </div>
+        )}
+        {Number(service.kesto) > 0 && (
+          <div>
+            <span>Kesto</span>
+            <span>{formatDuration(service.kesto)}</span>
+          </div>
+        )}
         {kuvaus[0] !== '' ? (
           <div>
             <span>Kuvaus</span>
@@ -139,53 +158,72 @@ const ServiceSingleEdit: React.FC<IServiceSingleProps> = ({
             />
           </div>
           <div className='input-wrap'>
-            <label htmlFor='name'>
+            <label htmlFor='single-name'>
               <span>Palvelun nimi</span>
             </label>
             <span className='input'>
-              <input required id='name' value={name} onChange={handleNameChange} />
+              <input required id='single-name' value={name} onChange={handleNameChange} />
             </span>
           </div>
           <div className='input-wrap'>
-            <label htmlFor='detail'>
+            <label htmlFor='single-detail'>
               <span>Tarkennus</span>
             </label>
             <span className='input'>
               <input
-                id='detail'
+                id='single-detail'
                 value={detail}
                 onChange={(e) => setDetail(e.target.value)}
               />
             </span>
           </div>
           <div className='input-wrap'>
-            <label htmlFor='price'>
-              <span>Palvelun hinta (€)</span>
+            <label htmlFor='single-price'>
+              <span>Palvelun hinta tai minimihinta (€)</span>
             </label>
             <span className='input'>
               <input
                 required
-                id='price'
+                id='single-price'
                 type='text'
                 value={price}
                 onChange={handlePriceChange}
+                pattern='^[0-9]*[.,]?[0-9]*$'
               />
             </span>
           </div>
           <div className='input-wrap'>
-            <label htmlFor='duration'>
+            <label htmlFor='single-price2'>
+              <span>Palvelun maksimihinta (€)</span>
+            </label>
+            <span className='input'>
+              <input
+                id='single-price2'
+                type='text'
+                value={price2}
+                onChange={handlePrice2Change}
+                pattern='^[0-9]*[.,]?[0-9]*$'
+              />
+            </span>
+          </div>
+          <div className='input-wrap'>
+            <label htmlFor='single-duration'>
               <span>Palvelun kesto (minuuteissa)</span>
             </label>
             <span className='input'>
-              <input id='duration' value={duration} onChange={handleDurationChange} />
+              <input
+                id='single-duration'
+                value={duration}
+                onChange={handleDurationChange}
+              />
             </span>
           </div>
           <div>
-            <label htmlFor='description'>
+            <label htmlFor='single-description'>
               <span>Palvelun kuvaus</span>
             </label>
             <textarea
-              id='description'
+              id='single-description'
               value={description}
               onChange={handleDescriptionChange}
             />

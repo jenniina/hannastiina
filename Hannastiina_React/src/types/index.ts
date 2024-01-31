@@ -21,6 +21,7 @@ export interface IOrderByState {
 export interface ICategory {
   id?: number
   kategoria: string
+  info: string
   orderIndex: number
   viimeisinMuokkaus: number
 }
@@ -35,6 +36,7 @@ export interface IService {
   nimi: string
   tarkennus: string
   hinta: number
+  hinta2: number | null
   kesto: number
   kuvaus: string
   viimeisinMuokkaus: number
