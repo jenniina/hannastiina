@@ -16,9 +16,9 @@
   --gray: hsl(0, 0%, 66%);
   --gradient: linear-gradient(
     4deg,
-    hsl(var(--hue), var(--sat), 92%) 0%,
-    hsl(var(--hue), var(--sat), 88%) 50%,
-    hsl(var(--hue), var(--sat), 78%) 100%
+    hsl(var(--hue), var(--sat), 96%) 0%,
+    hsl(var(--hue), var(--sat), 92%) 50%,
+    hsl(var(--hue), var(--sat), 84%) 100%
   );
   --gradient-side: linear-gradient(
     90deg,
@@ -35,9 +35,15 @@
   );
   --gradient-heading: linear-gradient(
     0deg,
-    hsl(var(--hue), var(--sat), 84%) 0%,
-    hsl(var(--hue), var(--sat), 88%) 40%,
-    hsla(var(--hue), var(--sat), 88%, 0.6) 100%
+    hsl(var(--hue), var(--sat), 88%) 0%,
+    hsl(var(--hue), var(--sat), 90%) 40%,
+    hsla(var(--hue), var(--sat), 90%, 0.6) 100%
+  );
+  --gradient-heading-lighter: linear-gradient(
+    0deg,
+    hsl(var(--hue), var(--sat), 90%) 0%,
+    hsl(var(--hue), var(--sat), 92%) 40%,
+    hsla(var(--hue), var(--sat), 92%, 0.3) 100%
   );
   --gradient-th: linear-gradient(
     0deg,
@@ -190,11 +196,11 @@ h6 {
   line-height: 1.2;
   text-align: left;
   background-color: transparent;
-  background: var(--gradient-heading);
+  background: var(--gradient-heading-lighter);
   padding: 0.35em 0.4em 0.2em;
   border-radius: var(--radius-small);
 
-  border: 1px solid var(--pink);
+  border: 1px solid var(--pink-light);
   border-bottom-width: 4px;
   border-top-width: 0;
 }
@@ -202,6 +208,7 @@ h1 {
   font-size: clamp(var(--title-M), 23vw, var(--title-L));
   letter-spacing: calc(var(--letter-spacing) * -2.5);
   line-height: 0.8;
+  background: var(--gradient-heading);
 }
 h1 > span {
   display: inline-block;
@@ -211,7 +218,8 @@ h2 {
   font-size: var(--title-XL);
   font-size: clamp(var(--title-XL), 11vw, var(--title-XXL));
   letter-spacing: calc(var(--letter-spacing) * -2);
-  border-bottom: 4px solid var(--pink-dark);
+  border-bottom: 4px solid var(--pink);
+  background: var(--gradient-heading);
 }
 h3 {
   font-size: var(--title-L);
@@ -648,7 +656,7 @@ th {
   letter-spacing: calc(var(--letter-spacing) * -1);
   background-color: transparent;
   background: var(--gradient-th);
-  border-bottom: 4px solid var(--pink);
+  border-bottom: 4px solid var(--pink-light);
   padding: var(--padd) 0 0 calc(var(--padd) * 2);
 }
 td {

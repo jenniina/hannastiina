@@ -307,7 +307,7 @@ const CategoryEdit = ({ user }: Props) => {
             </span>
           </div>
           <div className='input-wrap'>
-            <label htmlFor='category-info'>Kategorian kuvaus: </label>
+            <label htmlFor='category-info'>Kategorian tarkenne: </label>
             <span className='input'>
               <input
                 id='category-info'
@@ -367,7 +367,7 @@ const CategoryEdit = ({ user }: Props) => {
                 </span>
               </div>
               <div className='input-wrap'>
-                <label htmlFor='category-edit-info'>Kategorian kuvaus: </label>
+                <label htmlFor='category-edit-info'>Kategorian tarkenne: </label>
                 <span className='input'>
                   <input
                     id='category-edit-info'
