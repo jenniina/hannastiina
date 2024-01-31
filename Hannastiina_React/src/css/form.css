@@ -135,7 +135,7 @@ textarea,
     input.bg /*give className of 'bg' to any inputs that need a background */ {
   background-color: var(--pink-light);
   background: var(--gradient);
-  border-bottom: solid 0.1em var(--pink-dark);
+  border-bottom: solid 0.1em var(--pink);
 }
 .input-wrap {
   width: 100%;
@@ -163,7 +163,7 @@ textarea,
   background: var(--gradient);
   pointer-events: none;
   border-radius: var(--radius-small);
-  border-bottom: solid 0.15em var(--pink-dark);
+  border-bottom: solid 0.15em var(--pink);
   transition-property: transform;
   transition-timing-function: ease-in-out;
   transition-duration: 300ms;

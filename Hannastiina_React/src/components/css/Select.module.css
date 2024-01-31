@@ -47,9 +47,9 @@
   background-color: var(--color-bg-main);
   border: var(--border) solid var(--color-fg);
   border-color: transparent;
-  border-bottom-color: var(--pink-dark);
+  border-bottom-color: var(--pink);
   border-style: solid;
-  border-width: 0.09em 0.05em 0.1em 0.05em;
+  border-width: 0.09em 0.05em 0.16em 0.05em;
   border-radius: var(--radius);
   outline: none;
   margin-bottom: 1rem;
