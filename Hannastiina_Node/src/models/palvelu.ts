@@ -9,6 +9,7 @@ class Palvelu extends Model {
   public nimi!: string
   public tarkennus!: string
   public hinta!: number
+  public hinta2!: number
   public kesto!: number
   public kuvaus!: string
   public viimeisinMuokkaus!: number
@@ -42,6 +43,13 @@ Palvelu.init(
     hinta: {
       type: DataTypes.FLOAT,
       allowNull: false,
+      validate: {
+        isNumeric: true,
+      },
+    },
+    hinta2: {
+      type: DataTypes.FLOAT,
+      allowNull: true,
       validate: {
         isNumeric: true,
       },

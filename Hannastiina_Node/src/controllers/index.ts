@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import { Op, literal } from 'sequelize'
+import { Op } from 'sequelize'
 import Palvelu from '../models/palvelu'
 import Esittely from '../models/esittely'
 import Kategoria from '../models/kategoria'
@@ -432,7 +432,7 @@ const getOrder = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Tapahtui virhe!',
+      message: 'Tapahtui virhe! >',
       error,
     })
     console.error('Virhe:', error)
@@ -446,7 +446,7 @@ const addOrder = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Tapahtui virhe!',
+      message: 'Tapahtui virhe!`',
       error,
     })
     console.error('Virhe:', error)
@@ -513,7 +513,7 @@ const deleteOrder = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Tapahtui virhe!',
+      message: 'Tapahtui virhe!<',
       error,
     })
     console.error('Virhe:', error)
@@ -552,7 +552,7 @@ const addCategory = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Tapahtui virhe!',
+      message: 'Tapahtui virhe!~',
       error,
     })
     console.error('Virhe:', error)
@@ -563,7 +563,7 @@ const updateCategory = async (req: Request, res: Response): Promise<void> => {
   try {
     const category = await Kategoria.update(req.body, {
       where: {
-        _id: req.params._id,
+        id: req.params.id,
       },
     })
     if (!category) {
@@ -574,8 +574,8 @@ const updateCategory = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Tapahtui virhe!',
-      error,
+      message: 'Tapahtui virhe!*',
+      error: (error as Error).message,
     })
     console.error('Virhe:', error)
   }
@@ -664,7 +664,7 @@ const deleteCategory = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Tapahtui virhe!',
+      message: 'Tapahtui virhe!^',
       error,
     })
     console.error('Virhe:', error)
@@ -726,7 +726,7 @@ const deleteIntro = async (req: Request, res: Response): Promise<void> => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Tapahtui virhe!',
+      message: 'Tapahtui virhe! /',
       error,
     })
     console.error('Virhe:', error)
