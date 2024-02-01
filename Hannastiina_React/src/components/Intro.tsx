@@ -7,9 +7,10 @@ import { notify } from '../reducers/notificationReducer'
 
 interface Props {
   user?: IUser
+  windowWidth: number
 }
 
-const Intro = ({ user }: Props) => {
+const Intro = ({ user, windowWidth }: Props) => {
   const dispatch = useAppDispatch()
   const intro = useSelector((state: IReducers) => state.intro)
   const [introText, setIntroText] = useState(intro?.esittely?.[0]?.esittely as string)
@@ -67,7 +68,7 @@ const Intro = ({ user }: Props) => {
 
   return (
     <>
-      <div className='public'>
+      <div className='public intro'>
         {!user && teksti[0] !== '' && (
           <div className='introduction'>
             {teksti?.map((rivi, index) => {
@@ -77,7 +78,7 @@ const Intro = ({ user }: Props) => {
         )}
       </div>
       {user && intro ? (
-        <div className='edit'>
+        <div className='edit intro'>
           <form onSubmit={handleUpdateIntro}>
             <label htmlFor='intro'>
               {teksti[0].trim() !== ''
@@ -87,7 +88,7 @@ const Intro = ({ user }: Props) => {
             <textarea
               id='intro'
               name='intro'
-              rows={5}
+              rows={windowWidth < 300 ? 10 : windowWidth < 600 ? 7 : 5}
               value={introText}
               onChange={(e) => setIntroText(e.target.value)}
             />

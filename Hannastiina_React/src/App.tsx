@@ -119,7 +119,7 @@ function App() {
               </div>
             </>
           )}
-          <Intro user={user} />
+          <Intro user={user} windowWidth={windowWidth} />
           {!user && <Map windowHeight={windowHeight} />}
           {user && Number(user?.role) !== 1 ? (
             <Users user={user} users={users} windowWidth={windowWidth} />
