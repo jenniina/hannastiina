@@ -9,9 +9,10 @@ import ServiceSingle from './ServiceSingle'
 interface Props {
   formatDuration: (minutes: number) => string
   windowWidth: number
+  maxPrice: number
 }
 
-const ServiceList = ({ formatDuration, windowWidth }: Props) => {
+const ServiceList = ({ formatDuration, windowWidth, maxPrice }: Props) => {
   const dispatch = useAppDispatch()
   const { services, loading, error } = useSelector((state: IReducers) => state.services)
   const [filteredServices, setFilteredServices] = useState<IService[]>(services)
@@ -80,7 +81,7 @@ const ServiceList = ({ formatDuration, windowWidth }: Props) => {
     event.preventDefault()
     setSearchName('')
     setMin(0)
-    setMax(300)
+    setMax(maxPrice)
     setFilterBy('')
     dispatch(fetchServices()).catch((error) => console.error(error))
 
@@ -144,7 +145,7 @@ const ServiceList = ({ formatDuration, windowWidth }: Props) => {
               onClick={() => {
                 setFilterBy('')
                 setMin(0)
-                setMax(300)
+                setMax(maxPrice)
                 setSearchName('')
               }}
             >

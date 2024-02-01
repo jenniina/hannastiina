@@ -30,9 +30,15 @@ interface Props {
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     id: string
   ) => void
+  maxPrice: number
 }
 
-const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => {
+const ServiceEdit = ({
+  user,
+  formatDuration,
+  handleScrollToElement,
+  maxPrice,
+}: Props) => {
   const dispatch = useAppDispatch()
   const { services, loading, error } = useSelector((state: IReducers) => state.services)
   const [filteredServices, setFilteredServices] = useState<IService[] | undefined>(
@@ -347,7 +353,7 @@ const ServiceEdit = ({ user, formatDuration, handleScrollToElement }: Props) => 
               onClick={() => {
                 setFilterBy('')
                 setMin(0)
-                setMax(300)
+                setMax(maxPrice)
                 setSearchName('')
               }}
             >

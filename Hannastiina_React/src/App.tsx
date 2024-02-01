@@ -20,6 +20,8 @@ function App() {
   const user = useSelector((state: IReducers) => state.users?.user as IUser)
   const users = useSelector((state: IReducers) => state.users?.users as IUser[])
   const [isOpen, setIsOpen] = useState(false)
+  const maxPrice = 300
+
   const scrollbarWidth = useScrollbarWidth()
 
   function closing() {
@@ -131,9 +133,14 @@ function App() {
               user={user}
               formatDuration={formatDuration}
               handleScrollToElement={handleScrollToElement}
+              maxPrice={maxPrice}
             />
           ) : (
-            <ServiceList formatDuration={formatDuration} windowWidth={windowWidth} />
+            <ServiceList
+              formatDuration={formatDuration}
+              windowWidth={windowWidth}
+              maxPrice={maxPrice}
+            />
           )}
         </div>
       </main>
