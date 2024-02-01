@@ -27,6 +27,21 @@ _Käyttäjärooleja on kolme. Sivuston omistaja ja sivuston ylläpitäjät voiva
 - @reduxjs/toolkit
 - axios
 
+#### React Dev-dependencies | _React-kehitysriippuvuudet_
+
+- typescript
+- vite
+- rimraf
+- rollup-plugin-copy
+- eslint
+- eslint-plugin-react-hooks
+- eslint-plugin-react-refresh
+- @types/react
+- @types/react-dom
+- @typescript-eslint/eslint-plugin
+- @typescript-eslint/parser
+- @vitejs/plugin-react
+
 ### Node.js
 
 - express
@@ -37,3 +52,15 @@ _Käyttäjärooleja on kolme. Sivuston omistaja ja sivuston ylläpitäjät voiva
 - bcryptjs
 - jsonwebtoken
 - dotenv
+
+#### Node.js Dev-dependencies | _Node.js-kehitysriippuvuudet_
+
+- concurrently
+- nodemon
+- typescript
+- @types/bcrypt
+- @types/bcryptjs
+- @types/cors
+- @types/express
+- @types/jsonwebtoken
+- @types/node
