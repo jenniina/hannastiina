@@ -171,29 +171,35 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
               const style: React.CSSProperties = {
                 position: 'absolute',
                 top:
-                  windowWidth > 1000
-                    ? `clamp(10px, calc(-150px + 3vh * ${item.e * 2}), ${
-                        ulRef.current && ulRef.current?.offsetHeight > 200
-                          ? ulRef.current?.offsetHeight - 20 + 'px'
-                          : '90vh'
+                  windowWidth > 1400
+                    ? `clamp(0px, calc(-200px + 3vh * ${item.e * 2}), ${
+                        ulRef.current && ulRef.current?.offsetHeight > 600
+                          ? ulRef.current?.offsetHeight - 200 + 'px'
+                          : '80vh'
+                      })`
+                    : windowWidth > 1000
+                    ? `clamp(0px, calc(-150px + 2vh * ${item.e * 2}), ${
+                        ulRef.current && ulRef.current?.offsetHeight > 400
+                          ? ulRef.current?.offsetHeight - 100 + 'px'
+                          : '80vh'
                       })`
                     : windowWidth > 600
-                    ? `clamp(10px, calc(-60px + 3vh * ${item.e}), ${
+                    ? `clamp(0px, calc(-60px + 3vh * ${item.e}), ${
                         ulRef.current && ulRef.current?.offsetHeight > 200
-                          ? ulRef.current?.offsetHeight - 20 + 'px'
-                          : '30vh'
+                          ? ulRef.current?.offsetHeight - 40 + 'px'
+                          : '20vh'
                       })`
                     : windowWidth > 400
-                    ? `clamp(10px, calc(-50px + 1vw * ${item.e * 2.5}), ${
+                    ? `clamp(0px, calc(-50px + 1vw * ${item.e * 2.5}), ${
                         ulRef.current ? ulRef.current?.offsetHeight + 'px' : '300px'
                       })`
-                    : `clamp(10px, calc(-50px + 2vw * ${item.e * 2.5}), ${
+                    : `clamp(0px, calc(-50px + 2vw * ${item.e * 2.5}), ${
                         ulRef.current ? ulRef.current?.offsetHeight + 'px' : '300px'
                       })`,
                 right:
                   windowWidth > 600
-                    ? `clamp(10px, calc(${item.i / 1.2} * 1.5vw * ${item.e}), 95vw)`
-                    : `clamp(10px, calc(${item.i} * 1.5vw * ${item.e}), 95vw)`,
+                    ? `clamp(50px, calc(${item.i / 1.2} * 1.5vw * ${item.e}), 95vw)`
+                    : `clamp(50px, calc(${item.i} * 1.5vw * ${item.e}), 95vw)`,
                 backgroundColor: `transparent`,
                 backgroundImage: `radial-gradient(${item.color} 0%, ${item.color} 50%, transparent 100%)`,
                 color: `${item.color}`,
