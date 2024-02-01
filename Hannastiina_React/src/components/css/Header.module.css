@@ -115,7 +115,7 @@ header .img {
   position: relative;
   width: calc(100vw - var(--scrollbar-width));
   max-width: calc(100vw - var(--scrollbar-width));
-  overflow: hidden;
+  /*overflow: hidden; */
   background-image: linear-gradient(
     45deg,
     var(--silver) 25%,

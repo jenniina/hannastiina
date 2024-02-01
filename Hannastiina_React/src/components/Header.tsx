@@ -222,9 +222,7 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
                 borderRadius: '65% 65% 70% 60% / 60% 70% 60% 65%',
               }
 
-              if (!itemRefs.current[index]) {
-                itemRefs.current[index] = createRef()
-              }
+              itemRefs.current[index] = createRef()
 
               const isWithinBounds = useIsWithinBounds(itemRefs.current[index], ulRef)
 

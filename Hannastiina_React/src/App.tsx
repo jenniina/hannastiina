@@ -154,7 +154,7 @@ function App() {
             <p>
               <strong>Puhelin: </strong>{' '}
               <span>
-                <a href='tel:095666124'>09 566 6124</a>
+                <a href='tel:095666129'>09 566 61 29</a>
               </span>
             </p>
             <p>
