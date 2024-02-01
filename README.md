@@ -12,7 +12,7 @@ _Sivuston intro, kategoriat, käyttäjät ja palvelut ovat tallennettu MySQL-tie
 
 ## User roles | _Käyttäjäroolit_
 
-There are three main user roles and a fourth testing role. Site owner and site administrators can manage users and services, while authorized users can manage services. Site owner cannot be deleted. Testing role is for visiting purposes only and cannot edit the database.
+There are three main user roles and a fourth testing role. Site owner and site administrators can manage users and services, while authorized users can manage services. Site owner cannot be deleted. The testing role is for viewing purposes only and cannot edit the database.
 
 _Kolmen käyttäjäroolin lisäksi on neljäs testaajarooli. Sivuston omistaja ja sivuston ylläpitäjät voivat hallinnoida käyttäjiä ja palveluita, ja valtuutetut käyttäjät voivat hallinnoida palveluita. Sivuston omistajaa ei voi poistaa. Testaajarooli on vain tarkastelua varten, eikä voi muokata tietokantaa._
 
