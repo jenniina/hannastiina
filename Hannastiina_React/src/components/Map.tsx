@@ -43,7 +43,7 @@ const Map = ({ windowHeight }: Props) => {
             </p>
             <p>
               <strong>Osoite: </strong>
-              <span>Sitratie 1, 00420 Helsinki</span>
+              <span>Sitratie 3, 00420 Helsinki</span>
             </p>
           </div>
           <div>
