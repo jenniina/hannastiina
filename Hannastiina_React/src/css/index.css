@@ -815,6 +815,11 @@ li.kategoria {
   max-width: 800px;
   margin: 0 auto;
 }
+.edit.intro form,
+.introduction,
+.contact {
+  padding: 0 0.4em;
+}
 section.card {
   display: flex;
   flex-flow: column nowrap;
