@@ -6,7 +6,6 @@ import useEnterDirection from '../hooks/useEnterDirection'
 import styles from './css/Header.module.css'
 import { FC, createRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useRandomMinMax from '../hooks/useRandomMinMax'
-import useIsWithinBounds from '../hooks/useIsWithinBounds'
 
 interface Props {
   user: IUser | null
@@ -56,17 +55,9 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
   const ulRef = useRef() as RefObject<HTMLUListElement>
   const itemRefs = useRef<React.RefObject<HTMLLIElement>[]>([])
   const targetRef = useRef<HTMLElement | null>(null)
-  const [currentTarget, setCurrentTarget] = useState<HTMLElement | null>(null)
   const resetButton = useRef() as RefObject<HTMLButtonElement>
   const imgRef = useRef() as RefObject<HTMLDivElement>
   const [viewportChanged, setViewportChanged] = useState(false)
-  const isWithinBounds = useIsWithinBounds(targetRef, ulRef)
-
-  useEffect(() => {
-    if (currentTarget && !isWithinBounds) {
-      currentTarget.tabIndex = -1
-    }
-  }, [isWithinBounds, currentTarget])
 
   const handleReset = (e: { preventDefault: () => void }) => {
     e.preventDefault()
@@ -116,7 +107,6 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
   const movingItem = (e: React.PointerEvent<HTMLElement>) => {
     const target = e.target as HTMLElement
     targetRef.current = target
-    setCurrentTarget(target)
     const targetRight = window.getComputedStyle(target).getPropertyValue('right')
     const targetTop = window.getComputedStyle(target).getPropertyValue('top')
     const from = useEnterDirection(e)
@@ -224,8 +214,6 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
 
               itemRefs.current[index] = createRef()
 
-              const isWithinBounds = useIsWithinBounds(itemRefs.current[index], ulRef)
-
               return (
                 <li
                   key={`${index}`}
@@ -234,7 +222,7 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
                   style={style}
                   id={`item${index + 1}`}
                   role={'option'}
-                  tabIndex={isWithinBounds ? 0 : -1}
+                  tabIndex={0}
                   onFocus={(e) => {
                     ulRef.current?.setAttribute('aria-activedescendant', `${e.target.id}`)
                   }}
