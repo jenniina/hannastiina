@@ -1,7 +1,7 @@
 {
   "name": "hannastiina-react",
-  "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Parturi Kampaamo Hannastiina frontend",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,6 +11,8 @@
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
+  "author": "Jenniina Laine",
+  "license": "UNLICENSED",
   "dependencies": {
     "@reduxjs/toolkit": "^2.0.1",
     "axios": "^1.6.5",

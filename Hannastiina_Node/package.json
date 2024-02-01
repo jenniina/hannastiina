@@ -1,7 +1,7 @@
 {
-  "name": "hannastiina",
+  "name": "hannastiina-node",
   "version": "1.0.0",
-  "description": "Parturi Kampaamo Hannastiina",
+  "description": "Parturi Kampaamo Hannastiina backend",
   "main": "app.js",
   "scripts": {
     "build": "npx tsc",
@@ -9,7 +9,7 @@
     "start": "node build/app.js"
   },
   "author": "Jenniina Laine",
-  "license": "ISC",
+  "license": "UNLICENSED",
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
