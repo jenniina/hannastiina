@@ -12,9 +12,9 @@ _Sivuston intro, kategoriat, käyttäjät ja palvelut ovat tallennettu MySQL-tie
 
 ## User roles | _Käyttäjäroolit_
 
-There are two user roles. Site administrators can manage users and services, while authorized users can manage services.
+There are three user roles. Site owner and site administrators can manage users and services, while authorized users can manage services. Site owner cannot be deleted.
 
-_Käyttäjärooleja on kaksi. Sivuston ylläpitäjät voivat hallinnoida käyttäjiä ja palveluita, ja valtuutetut käyttäjät voivat hallinnoida palveluita._
+_Käyttäjärooleja on kolme. Sivuston omistaja ja sivuston ylläpitäjät voivat hallinnoida käyttäjiä ja palveluita, ja valtuutetut käyttäjät voivat hallinnoida palveluita. Sivuston omistajaa ei voi poistaa._
 
 ## Dependencies | _Riippuvuudet_
 
