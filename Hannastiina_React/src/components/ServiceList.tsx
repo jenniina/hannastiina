@@ -144,7 +144,7 @@ const ServiceList = ({ formatDuration, windowWidth }: Props) => {
               onClick={() => {
                 setFilterBy('')
                 setMin(0)
-                setMax(100)
+                setMax(300)
                 setSearchName('')
               }}
             >
