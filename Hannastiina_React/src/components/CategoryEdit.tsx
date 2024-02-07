@@ -89,9 +89,9 @@ const CategoryEdit = ({ user }: Props) => {
 
   const [name, setName] = useState('')
   const [newName, setNewName] = useState('')
-  const [info, setInfo] = useState(categories?.[0]?.info as string)
+  const [info, setInfo] = useState((categories?.[0]?.info as string) ?? '')
   const [categoryObject, setCategoryObject] = useState<ICategory>(
-    categories?.[0] as ICategory
+    (categories?.[0] as ICategory) ?? ({} as ICategory)
   )
 
   useEffect(() => {

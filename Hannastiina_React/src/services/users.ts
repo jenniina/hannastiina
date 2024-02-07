@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
+import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from 'axios'
 import { IUser as user, credentials } from '../types'
 
 const VITE_BASE_URI = import.meta.env.VITE_BASE_URI
@@ -28,9 +28,22 @@ const login = async (credentials: credentials) => {
   return response.data
 }
 
-const getAll = async () => {
-  const response = await axios.get(baseUrl, getConfig())
-  return response.data
+const getAll = async (dispatch: (arg0: { payload: any; type: string }) => void) => {
+  try {
+    const response = await axios.get(baseUrl, getConfig())
+    return response.data
+  } catch (error) {
+    if (
+      (error as AxiosError<any>).response &&
+      (error as AxiosError<any>)?.response?.data.message === 'jwt expired'
+    ) {
+      dispatch({
+        type: 'users/logoutUser',
+        payload: undefined,
+      })
+    }
+    throw error
+  }
 }
 
 const createNewUser = async (newUser: user) => {

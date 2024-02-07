@@ -103,8 +103,8 @@ export const findUserById = (id: string) => {
 }
 
 export const initializeUsers = () => {
-  return async (dispatch: (arg0: { payload: any; type: 'users/setUsers' }) => void) => {
-    const users = await userService.getAll()
+  return async (dispatch: (arg0: { payload: any; type: string }) => void) => {
+    const users = await userService.getAll(dispatch)
     dispatch({ type: 'users/setUsers', payload: users })
   }
 }
