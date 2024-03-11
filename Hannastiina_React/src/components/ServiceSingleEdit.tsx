@@ -238,6 +238,7 @@ const ServiceSingleEdit: React.FC<IServiceSingleProps> = ({
               onClick={() => {
                 setEditOpen(false)
                 setEditId(-1)
+                setPrice2('')
               }}
             >
               Peruuta
