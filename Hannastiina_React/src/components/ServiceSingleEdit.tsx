@@ -14,6 +14,7 @@ interface IServiceSingleProps {
   setName: (name: string) => void
   setDetail: (detail: string) => void
   setPrice: (price: string) => void
+  setPrice2: (price: string) => void
   setDuration: (duration: number) => void
   setDescription: (description: string) => void
   setAddOpen: (open: boolean) => void
@@ -48,6 +49,7 @@ const ServiceSingleEdit: React.FC<IServiceSingleProps> = ({
   setName,
   setDetail,
   setPrice,
+  setPrice2,
   setDuration,
   setDescription,
   setAddOpen,
@@ -134,6 +136,7 @@ const ServiceSingleEdit: React.FC<IServiceSingleProps> = ({
               setName(service.nimi)
               setDetail(service.tarkennus)
               setPrice(service.hinta.toString())
+              setPrice2(service.hinta2?.toString() ?? '')
               setDuration(service.kesto)
               setDescription(service.kuvaus)
               setAddOpen(false)

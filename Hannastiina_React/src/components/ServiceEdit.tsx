@@ -558,6 +558,7 @@ const ServiceEdit = ({
                                 setCategory={setCategory}
                                 setDetail={setDetail}
                                 setPrice={setPrice}
+                                setPrice2={setPrice2}
                                 setDuration={setDuration}
                                 setDescription={setDescription}
                                 handleEditService={handleEditService}
