@@ -139,7 +139,7 @@ const ServiceEdit = ({
     } else if (price.trim() === '') {
       dispatch(notify('Palvelun hinta ei voi olla tyhjä', true, 5))
       return
-    } else if (Number(price) >= Number(price2)) {
+    } else if (price2 !== '' && Number(price) >= Number(price2)) {
       dispatch(notify('Minimihinnan tulee olla pienempi kuin maksimihinnan', true, 5))
       return
     } else {
