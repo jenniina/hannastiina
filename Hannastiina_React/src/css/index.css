@@ -740,6 +740,12 @@ li.single span {
   width: 100%;
   flex: 1 0 100%;
   padding: 0.5em 1em;
+  cursor: -webkit-grab;
+  cursor: grab;
+}
+.kategoriajarjestys > li.dragging {
+  cursor: -webkit-grabbing;
+  cursor: grabbing;
 }
 li.kategoria {
   padding: 0.5em 0 1em;
@@ -900,7 +906,8 @@ div.edit ul.palvelut > li[draggable='true'] {
   cursor: -webkit-grab;
   cursor: grab;
 }
-div.edit ul.palvelut > li[draggable='true']:active {
+div.edit ul.palvelut > li[draggable='true']:active,
+div.edit ul.palvelut > li[draggable='true'].dragging {
   cursor: -webkit-grabbing;
   cursor: grabbing;
 }
