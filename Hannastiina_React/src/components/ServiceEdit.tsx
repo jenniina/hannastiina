@@ -214,7 +214,7 @@ const ServiceEdit = ({
     setFilterBy('price')
   }
 
-  const handleFetchServices = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const allServices = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     dispatch(fetchServices()).catch((error) => console.error(error))
     setEditOpen(false)
@@ -222,10 +222,10 @@ const ServiceEdit = ({
     setEditId(-1)
     setAddOpen(false)
 
-    const anchor = document.querySelector(`#palvelulista`)
-    if (anchor) {
-      anchor.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
+    // const anchor = document.querySelector(`#palvelulista`)
+    // if (anchor) {
+    //   anchor.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    // }
   }
 
   const handleDelete = async (id: number) => {
@@ -361,7 +361,7 @@ const ServiceEdit = ({
             </button>
           </form>
 
-          <button onClick={handleFetchServices}>Näytä kaikki palvelut</button>
+          <button onClick={allServices}>Kaikki palvelut</button>
 
           <Accordion
             text='Lisää uusi palvelu tästä'

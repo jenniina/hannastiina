@@ -77,18 +77,18 @@ const ServiceList = ({ formatDuration, windowWidth, maxPrice }: Props) => {
     setFilterBy('price')
   }
 
-  const handleFetchServices = (event: MouseEvent<HTMLButtonElement>) => {
+  const allServices = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
     setSearchName('')
     setMin(0)
     setMax(maxPrice)
     setFilterBy('')
-    dispatch(fetchServices()).catch((error) => console.error(error))
+    //dispatch(fetchServices()).catch((error) => console.error(error))
 
-    const anchor = document.querySelector(`#palvelulista`)
-    if (anchor) {
-      anchor.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
+    // const anchor = document.querySelector(`#palvelulista`)
+    // if (anchor) {
+    //   anchor.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    // }
   }
 
   return (
@@ -152,7 +152,7 @@ const ServiceList = ({ formatDuration, windowWidth, maxPrice }: Props) => {
               Peru
             </button>
           </form>
-          <button onClick={handleFetchServices}>Näytä kaikki palvelut</button>
+          <button onClick={allServices}>Tyhjennä hakuehdot</button>
         </div>
 
         <ul className='palvelulista' id='palvelulista'>

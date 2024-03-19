@@ -7,7 +7,7 @@ header {
 header nav.main,
 .pink.filler {
   height: calc(calc(var(--gap) * 1) + 1vw);
-  max-height: calc(calc(var(--gap) * 1) + 1vw);
+  max-height: 44px;
   width: 100%;
   display: flex;
   flex-flow: row nowrap;
@@ -39,7 +39,7 @@ header nav.main ul {
 
 header nav.main,
 header .img {
-  margin-bottom: calc(var(--gap) * 0.3);
+  margin-bottom: calc(var(--gap) * 0.2);
 }
 
 header nav.main ul button {
@@ -241,12 +241,12 @@ header img.fg {
 @media (min-width: 300px) {
   header nav.main,
   header .img {
-    margin-bottom: calc(var(--gap) * 0.5);
+    margin-bottom: calc(var(--gap) * 0.2);
   }
   header nav.main,
   .pink.filler {
     height: calc(calc(var(--gap) * 2) + 1vw);
-    max-height: calc(calc(var(--gap) * 2) + 1vw);
+    max-height: 44px;
     width: 100%;
   }
   header nav.main ul {
@@ -362,7 +362,7 @@ header img.fg {
 @media (min-width: 800px) {
   header nav.main,
   header .img {
-    margin-bottom: 1.2vw;
+    margin-bottom: 8px;
   }
 }
 @media (min-width: 1000px) {
