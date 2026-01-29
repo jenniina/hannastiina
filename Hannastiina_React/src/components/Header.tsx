@@ -4,7 +4,15 @@ import img from '../assets/Hannastiina.png'
 import { IUser, RefObject } from '../types'
 import useEnterDirection from '../hooks/useEnterDirection'
 import styles from './css/Header.module.css'
-import { FC, createRef, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  FC,
+  createRef,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import useRandomMinMax from '../hooks/useRandomMinMax'
 
 interface Props {
@@ -23,7 +31,12 @@ type itemProps = {
   color: string
 }
 
-const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Props) => {
+const Header = ({
+  user,
+  handleScrollToElement,
+  windowWidth,
+  windowHeight,
+}: Props) => {
   const color = 'white'
   const initialAmount = 8
   const [amount, setAmount] = useState<number>(initialAmount)
@@ -40,17 +53,15 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
     { i: 10, e: 4.121, size: 8, color: color },
   ])
 
-  const isTouchDevice = () => {
+  const touchDevice = useMemo(() => {
+    if (typeof document === 'undefined') return false
     try {
-      //Try to create TouchEvent (fails for desktops and throws error)
       document.createEvent('TouchEvent')
       return true
-    } catch (e) {
+    } catch {
       return false
     }
-  }
-
-  const touchDevice = isTouchDevice()
+  }, [])
 
   const ulRef = useRef() as RefObject<HTMLUListElement>
   const itemRefs = useRef<React.RefObject<HTMLLIElement>[]>([])
@@ -64,10 +75,10 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
     windowWidth < 600 && amount === 4
       ? setAmount(5)
       : windowWidth < 600
-      ? setAmount(4)
-      : windowWidth >= 600 && amount === initialAmount
-      ? setAmount(initialAmount + 1)
-      : setAmount(initialAmount)
+        ? setAmount(4)
+        : windowWidth >= 600 && amount === initialAmount
+          ? setAmount(initialAmount + 1)
+          : setAmount(initialAmount)
   }
 
   const handleFocus = (
@@ -81,23 +92,21 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
     }
   }
 
-  const setupItems: itemProps[] = useMemo(() => {
-    for (let i: number = 0; i <= amount; i++) {
-      const item: itemProps = {
-        i: i,
+  useEffect(() => {
+    // SSR-safe: only randomize on the client after mount / amount changes.
+    // Initial render uses the fixed values above to avoid hydration mismatch.
+    if (typeof window === 'undefined') return
+
+    const next: itemProps[] = []
+    for (let i = 1; i <= amount; i++) {
+      next.push({
+        i,
         e: useRandomMinMax(5, 10),
         size: Math.round(useRandomMinMax(3, 13)),
-        color: color,
-      }
-      if (i == 0) {
-        setValues([])
-      } else {
-        setValues((prev) => {
-          return [...prev, item]
-        })
-      }
+        color,
+      })
     }
-    return values
+    setValues(next)
   }, [amount])
 
   useEffect(() => {
@@ -107,7 +116,9 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
   const movingItem = (e: React.PointerEvent<HTMLElement>) => {
     const target = e.target as HTMLElement
     targetRef.current = target
-    const targetRight = window.getComputedStyle(target).getPropertyValue('right')
+    const targetRight = window
+      .getComputedStyle(target)
+      .getPropertyValue('right')
     const targetTop = window.getComputedStyle(target).getPropertyValue('top')
     const from = useEnterDirection(e)
     switch (from) {
@@ -162,9 +173,9 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
           <ul
             ref={ulRef}
             id={`listbox`}
-            role='listbox'
+            role="listbox"
             aria-labelledby={`description`}
-            aria-activedescendant=''
+            aria-activedescendant=""
             className={`${styles.herocontent} ${viewportChanged ? 'disable' : ''}`}
           >
             {array.map((item, index: number) => {
@@ -178,24 +189,28 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
                           : '80vh'
                       })`
                     : windowWidth > 1000
-                    ? `clamp(0px, calc(-150px + 2vh * ${item.e * 2}), ${
-                        ulRef.current && ulRef.current?.offsetHeight > 400
-                          ? ulRef.current?.offsetHeight - 100 + 'px'
-                          : '80vh'
-                      })`
-                    : windowWidth > 600
-                    ? `clamp(0px, calc(-60px + 3vh * ${item.e}), ${
-                        ulRef.current && ulRef.current?.offsetHeight > 200
-                          ? ulRef.current?.offsetHeight - 40 + 'px'
-                          : '20vh'
-                      })`
-                    : windowWidth > 400
-                    ? `clamp(0px, calc(-50px + 1vw * ${item.e * 2.5}), ${
-                        ulRef.current ? ulRef.current?.offsetHeight + 'px' : '300px'
-                      })`
-                    : `clamp(0px, calc(-50px + 2vw * ${item.e * 2.5}), ${
-                        ulRef.current ? ulRef.current?.offsetHeight + 'px' : '300px'
-                      })`,
+                      ? `clamp(0px, calc(-150px + 2vh * ${item.e * 2}), ${
+                          ulRef.current && ulRef.current?.offsetHeight > 400
+                            ? ulRef.current?.offsetHeight - 100 + 'px'
+                            : '80vh'
+                        })`
+                      : windowWidth > 600
+                        ? `clamp(0px, calc(-60px + 3vh * ${item.e}), ${
+                            ulRef.current && ulRef.current?.offsetHeight > 200
+                              ? ulRef.current?.offsetHeight - 40 + 'px'
+                              : '20vh'
+                          })`
+                        : windowWidth > 400
+                          ? `clamp(0px, calc(-50px + 1vw * ${item.e * 2.5}), ${
+                              ulRef.current
+                                ? ulRef.current?.offsetHeight + 'px'
+                                : '300px'
+                            })`
+                          : `clamp(0px, calc(-50px + 2vw * ${item.e * 2.5}), ${
+                              ulRef.current
+                                ? ulRef.current?.offsetHeight + 'px'
+                                : '300px'
+                            })`,
                 right:
                   windowWidth > 600
                     ? `clamp(50px, calc(${item.i / 1.2} * 1.5vw * ${item.e}), 95vw)`
@@ -206,9 +221,17 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
                 ['--i' as string]: `${item.i}`,
                 ['--e' as string]: `${item.e}`,
                 ['--s' as string]:
-                  windowWidth < windowHeight ? `${item.size}vh` : `${item.size}vw`,
-                width: windowWidth < windowHeight ? `${item.size}vh` : `${item.size}vw`,
-                height: windowWidth < windowHeight ? `${item.size}vh` : `${item.size}vw`,
+                  windowWidth < windowHeight
+                    ? `${item.size}vh`
+                    : `${item.size}vw`,
+                width:
+                  windowWidth < windowHeight
+                    ? `${item.size}vh`
+                    : `${item.size}vw`,
+                height:
+                  windowWidth < windowHeight
+                    ? `${item.size}vh`
+                    : `${item.size}vw`,
 
                 ['--s2' as string]: item.size,
                 maxHeight: '200px',
@@ -230,7 +253,10 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
                   role={'option'}
                   tabIndex={0}
                   onFocus={(e) => {
-                    ulRef.current?.setAttribute('aria-activedescendant', `${e.target.id}`)
+                    ulRef.current?.setAttribute(
+                      'aria-activedescendant',
+                      `${e.target.id}`
+                    )
                   }}
                   onBlurCapture={() => {
                     ulRef.current?.setAttribute('aria-activedescendant', '')
@@ -259,7 +285,7 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
                   }}
                 >
                   <span>
-                    <span className='scr'>valo {index + 1}</span>
+                    <span className="scr">valo {index + 1}</span>
                   </span>
                 </li>
               )
@@ -301,11 +327,11 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
           </li>
         </ul>
       </nav>
-      <nav id='nav' className={`main ${styles.main} pink ${styles.pink}`}>
+      <nav id="nav" className={`main ${styles.main} pink ${styles.pink}`}>
         <ul>
           <li className={styles.services}>
             <button
-              id='palvelut-link'
+              id="palvelut-link"
               onClick={(e) => {
                 handleScrollToElement(e, 'palvelut')
               }}
@@ -335,16 +361,16 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
         </ul>
       </nav>
       <div ref={imgRef} className={styles.img}>
-        <img className={styles.bg} src={img} alt='tausta' aria-hidden='true' />
+        <img className={styles.bg} src={img} alt="tausta" aria-hidden="true" />
 
-        <ItemComponent array={setupItems} />
+        <ItemComponent array={values} />
 
         <div className={styles.bottom}>
           <button
-            data-instructions='Vinkki: klikkaa valoja poistaaksesi ne'
+            data-instructions="Vinkki: klikkaa valoja poistaaksesi ne"
             className={`reset ${styles.reset}`}
             ref={resetButton}
-            type='button'
+            type="button"
             onClick={handleReset}
           >
             <span>Palauta</span>
@@ -354,7 +380,9 @@ const Header = ({ user, handleScrollToElement, windowWidth, windowHeight }: Prop
 
       <div className={`pink filler ${styles.pink} ${styles.filler}`}>
         {user && (
-          <span>Kirjauduttu nimellä {user?.name ? user?.name : user.username} </span>
+          <span>
+            Kirjauduttu nimellä {user?.name ? user?.name : user.username}{' '}
+          </span>
         )}
       </div>
       <h1 className={windowWidth > 250 ? 'scr' : ''}>

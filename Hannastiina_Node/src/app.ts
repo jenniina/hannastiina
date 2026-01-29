@@ -2,6 +2,7 @@ import express, { Express } from 'express'
 import cors from 'cors'
 import routes from './routes'
 import path from 'path'
+import fs from 'fs'
 import { Sequelize } from 'sequelize'
 import './models/palvelu'
 import './models/jarjestys'
@@ -46,16 +47,30 @@ sequelize
     app.use(express.urlencoded({ extended: true })) // Middleware to parse URL-encoded form data
     app.use('/api/', routes)
 
-    // Serve static files from the React app
-    app.use(express.static(path.join(__dirname, 'dist')))
+    // Serve Vike client output (prerendered HTML lives under dist/client/<path>/index.html)
+    const distClientPath = path.join(__dirname, 'dist', 'client')
+    app.use(express.static(distClientPath))
 
-    // The "catchall" handler: for any request that doesn't
-    // match one above, send back React's index.html file.
+    // Catch-all: prefer prerendered HTML if it exists, else fallback to SPA index.
     app.get('*', (req, res) => {
-      res.sendFile(path.join(__dirname, 'dist', 'index.html'))
+      const urlPath = req.path.replace(/^\/+/, '').replace(/\/+$/, '')
+      const prerenderedHtmlPath = path.join(
+        distClientPath,
+        urlPath,
+        'index.html'
+      )
+
+      if (fs.existsSync(prerenderedHtmlPath)) {
+        res.sendFile(prerenderedHtmlPath)
+        return
+      }
+
+      res.sendFile(path.join(distClientPath, 'index.html'))
     })
 
-    app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`))
+    app.listen(PORT, () =>
+      console.log(`Server running on http://localhost:${PORT}`)
+    )
   })
   .catch((error) => {
     console.error('Unable to connect to the database:', error)
