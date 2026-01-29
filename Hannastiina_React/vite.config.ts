@@ -10,7 +10,6 @@ export default defineConfig(({ command }) => ({
     {
       ...copy({
         targets: [
-          { src: './dist/*', dest: '../Hannastiina_Node/build/dist' },
           { src: 'routes.json', dest: '../Hannastiina_Node/build/dist' },
         ],
         hook: 'writeBundle', // run the plugin after all the files are bundled and written to disk
