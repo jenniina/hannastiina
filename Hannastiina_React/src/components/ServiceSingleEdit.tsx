@@ -31,7 +31,9 @@ interface IServiceSingleProps {
   handlePriceChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   handlePrice2Change: (event: React.ChangeEvent<HTMLInputElement>) => void
   handleDurationChange: (event: React.ChangeEvent<HTMLInputElement>) => void
-  handleDescriptionChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void
+  handleDescriptionChange: (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => void
   formatDuration: (minutes: number) => string
 }
 
@@ -117,14 +119,18 @@ const ServiceSingleEdit: React.FC<IServiceSingleProps> = ({
         )}{' '}
       </div>
       <div className={`btn-wrap ${editOpen ? 'open' : ''}`}>
-        <button className='danger' onClick={() => handleDelete(service.id as number)}>
+        <button
+          className="danger"
+          onClick={() => handleDelete(service.id as number)}
+        >
           Poista
         </button>
         {editId !== service.id && (
           <button
             onClick={() => {
               const cat = categories?.find((c) => c.id === service.kategoria)
-              const firstLetterCat = cat?.kategoria?.charAt(0)?.toUpperCase() ?? ''
+              const firstLetterCat =
+                cat?.kategoria?.charAt(0)?.toUpperCase() ?? ''
               const rest = cat?.kategoria.slice(1) ?? ''
               const kategoria = firstLetterCat + rest
               setCategory({
@@ -151,90 +157,95 @@ const ServiceSingleEdit: React.FC<IServiceSingleProps> = ({
           <legend>Muokkaa palvelua</legend>
           <div>
             <Select
-              className='category-select'
-              id='category-single'
+              className="category-select"
+              id="category-single"
               value={category}
               onChange={(o) => setCategory(o as SelectOption)}
               options={options}
-              instructions='Valitse kategoria'
-              selectAnOption='Valitse kategoria'
+              instructions="Valitse kategoria"
+              selectAnOption="Valitse kategoria"
             />
           </div>
-          <div className='input-wrap'>
-            <label htmlFor='single-name'>
+          <div className="input-wrap">
+            <label htmlFor="single-name">
               <span>Palvelun nimi</span>
             </label>
-            <span className='input'>
-              <input required id='single-name' value={name} onChange={handleNameChange} />
+            <span className="input">
+              <input
+                required
+                id="single-name"
+                value={name}
+                onChange={handleNameChange}
+              />
             </span>
           </div>
-          <div className='input-wrap'>
-            <label htmlFor='single-detail'>
+          <div className="input-wrap">
+            <label htmlFor="single-detail">
               <span>Tarkennus</span>
             </label>
-            <span className='input'>
+            <span className="input">
               <input
-                id='single-detail'
+                id="single-detail"
                 value={detail}
                 onChange={(e) => setDetail(e.target.value)}
               />
             </span>
           </div>
-          <div className='input-wrap'>
-            <label htmlFor='single-price'>
+          <div className="input-wrap">
+            <label htmlFor="single-price">
               <span>Palvelun hinta tai minimihinta (€)</span>
             </label>
-            <span className='input'>
+            <span className="input">
               <input
                 required
-                id='single-price'
-                type='text'
+                id="single-price"
+                type="text"
                 value={price}
                 onChange={handlePriceChange}
-                pattern='^[0-9]*[.,]?[0-9]*$'
+                pattern="^[0-9]*[.,]?[0-9]*$"
               />
             </span>
           </div>
-          <div className='input-wrap'>
-            <label htmlFor='single-price2'>
+          <div className="input-wrap">
+            <label htmlFor="single-price2">
               <span>Palvelun maksimihinta (€)</span>
             </label>
-            <span className='input'>
+            <span className="input">
               <input
-                id='single-price2'
-                type='text'
+                id="single-price2"
+                type="text"
                 value={price2}
                 onChange={handlePrice2Change}
-                pattern='^[0-9]*[.,]?[0-9]*$'
+                pattern="^[0-9]*[.,]?[0-9]*$"
               />
             </span>
           </div>
-          <div className='input-wrap'>
-            <label htmlFor='single-duration'>
+          <div className="input-wrap">
+            <label htmlFor="single-duration">
               <span>Palvelun kesto (minuuteissa)</span>
             </label>
-            <span className='input'>
+            <span className="input">
               <input
-                id='single-duration'
+                id="single-duration"
                 value={duration}
                 onChange={handleDurationChange}
               />
             </span>
           </div>
           <div>
-            <label htmlFor='single-description'>
+            <label htmlFor="single-description">
               <span>Palvelun kuvaus</span>
             </label>
             <textarea
-              id='single-description'
+              id="single-description"
               value={description}
               onChange={handleDescriptionChange}
             />
           </div>
-          <div className='flex start gap'>
-            <button type='submit'>Tallenna</button>
+          <div className="flex start gap">
+            <button type="submit">Tallenna</button>
             <button
-              className='danger'
+              className="danger"
               onClick={() => {
                 setEditOpen(false)
                 setEditId(-1)

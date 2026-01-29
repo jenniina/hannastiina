@@ -12,14 +12,17 @@ interface Props {
 
 const Intro = ({ user, windowWidth }: Props) => {
   const dispatch = useAppDispatch()
+  const isTestUser = Number(user?.role) === 0
   const intro = useSelector((state: IReducers) => state.intro)
-  const [introText, setIntroText] = useState(intro?.esittely?.[0]?.esittely as string)
+  const [introText, setIntroText] = useState(
+    intro?.esittely?.[0]?.esittely as string
+  )
 
   const teksti =
     intro &&
     typeof intro?.esittely?.[0]?.esittely === 'string' &&
     intro?.esittely?.[0]?.esittely.trim() !== ''
-      ? intro?.esittely?.[0]?.esittely?.split(/\n+/) ?? ['']
+      ? (intro?.esittely?.[0]?.esittely?.split(/\n+/) ?? [''])
       : ['']
 
   useEffect(() => {
@@ -34,11 +37,20 @@ const Intro = ({ user, windowWidth }: Props) => {
 
   const handleUpdateIntro = async (event: any) => {
     event.preventDefault()
+
+    if (isTestUser) {
+      dispatch(notify('Testaajakäyttäjällä tallennus on estetty.', true, 5))
+      return
+    }
+
     try {
       await dispatch(
         updateIntro({
           id: intro?.esittely?.[0]?.id as number,
-          newObject: { esittely: introText, viimeisinMuokkaus: user?.id as number },
+          newObject: {
+            esittely: introText,
+            viimeisinMuokkaus: user?.id as number,
+          },
         })
       )
         .then((result) => {
@@ -61,16 +73,20 @@ const Intro = ({ user, windowWidth }: Props) => {
     } catch (e: any) {
       console.error(e)
       dispatch(
-        notify(`Virhe! ${e?.response?.data?.message ?? (e as Error)?.message}`, true, 8)
+        notify(
+          `Virhe! ${e?.response?.data?.message ?? (e as Error)?.message}`,
+          true,
+          8
+        )
       )
     }
   }
 
   return (
     <>
-      <div className='public intro'>
+      <div className="public intro">
         {!user && teksti[0] !== '' && (
-          <div className='introduction'>
+          <div className="introduction">
             {teksti?.map((rivi, index) => {
               return <p key={index}>{rivi}</p>
             })}
@@ -78,21 +94,21 @@ const Intro = ({ user, windowWidth }: Props) => {
         )}
       </div>
       {user && intro ? (
-        <div className='edit intro'>
+        <div className="edit intro">
           <form onSubmit={handleUpdateIntro}>
-            <label htmlFor='intro'>
+            <label htmlFor="intro">
               {teksti[0].trim() !== ''
                 ? 'Muokkaa esittelytekstiä:'
                 : 'Lisää esittelyteksti:'}
             </label>
             <textarea
-              id='intro'
-              name='intro'
+              id="intro"
+              name="intro"
               rows={windowWidth < 300 ? 10 : windowWidth < 600 ? 7 : 5}
               value={introText}
               onChange={(e) => setIntroText(e.target.value)}
             />
-            <button type='submit'>Tallenna</button>
+            <button type="submit">Tallenna</button>
           </form>
           {/* <button onClick={handleDeleteIntro}>Delete</button> */}
         </div>

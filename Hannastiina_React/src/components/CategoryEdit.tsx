@@ -20,6 +20,7 @@ interface Props {
 
 const CategoryEdit = ({ user }: Props) => {
   const dispatch = useAppDispatch()
+  const isTestUser = Number(user?.role) === 0
   const { services } = useSelector((state: IReducers) => state.services)
   const { categories } = useSelector((state: IReducers) => state.categories)
 
@@ -103,6 +104,12 @@ const CategoryEdit = ({ user }: Props) => {
 
   const removeCategory = useCallback(
     async (categoryId: number) => {
+      if (isTestUser) {
+        dispatch(
+          notify('Testaajakäyttäjällä muokkaukset ovat estetty.', true, 5)
+        )
+        return
+      }
       // Find the category name in the categories array
       const category = categories.find((cat) => cat?.id === categoryId)
       const categoryName = category?.kategoria ?? ''
@@ -120,16 +127,22 @@ const CategoryEdit = ({ user }: Props) => {
           dispatch(deleteCategory(categoryId))
             .then(() => dispatch(fetchCategories()))
             .then(() => setCategory(options[0]))
-            .then(() => dispatch(notify(`Kategoria poistettu onnistuneesti`, false, 4)))
+            .then(() =>
+              dispatch(notify(`Kategoria poistettu onnistuneesti`, false, 4))
+            )
             .catch((error) => console.error(error))
       } else {
         // If there are services associated with the category, show an error message
         dispatch(
-          notify('Kategoriaa ei voi poistaa, koska siihen liittyy palveluita.', true, 8)
+          notify(
+            'Kategoriaa ei voi poistaa, koska siihen liittyy palveluita.',
+            true,
+            8
+          )
         )
       }
     },
-    [dispatch, categories, listItemsByCategory]
+    [dispatch, categories, isTestUser, listItemsByCategory]
   )
 
   useEffect(() => {
@@ -149,6 +162,10 @@ const CategoryEdit = ({ user }: Props) => {
 
   const editCategory = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    if (isTestUser) {
+      dispatch(notify('Testaajakäyttäjällä muokkaukset ovat estetty.', true, 5))
+      return
+    }
     if (category_.value === '') {
       dispatch(notify(`Valitse kategoria`, true, 4))
       return
@@ -184,19 +201,21 @@ const CategoryEdit = ({ user }: Props) => {
         })
         .catch((error) => {
           console.error(error)
-          dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 4))
+          dispatch(
+            notify(`Virhe! ${error.response.data.message ?? ''}`, true, 4)
+          )
         })
     }
   }
 
   return (
-    <div className='edit'>
-      <section className='card'>
-        <h2 id='kategoriat'>Kategoriat</h2>
+    <div className="edit">
+      <section className="card">
+        <h2 id="kategoriat">Kategoriat</h2>
         <h3>Kategorioiden järjestys</h3>
         <p>
-          Vedä ja pudota kategoriat haluamaasi järjestykseen. Uusi järjestys tallentuu
-          automaattisesti.
+          Vedä ja pudota kategoriat haluamaasi järjestykseen. Uusi järjestys
+          tallentuu automaattisesti.
         </p>
         <ol
           className={`kategoriajarjestys`}
@@ -205,6 +224,14 @@ const CategoryEdit = ({ user }: Props) => {
           }}
           onDrop={(e) => {
             e.preventDefault()
+
+            if (isTestUser) {
+              dispatch(
+                notify('Testaajakäyttäjällä muokkaukset ovat estetty.', true, 5)
+              )
+              return
+            }
+
             const draggedId = e.dataTransfer.getData('application/my-app')
             // Find the closest item to the drop position
             const closestItem = Array.from(
@@ -230,7 +257,8 @@ const CategoryEdit = ({ user }: Props) => {
           }}
         >
           {orderedCategories?.map((category) => {
-            const firstLetter = category?.kategoria?.charAt(0)?.toUpperCase() ?? ''
+            const firstLetter =
+              category?.kategoria?.charAt(0)?.toUpperCase() ?? ''
             const rest = category?.kategoria?.slice(1) ?? category?.kategoria
             const kategoria = `${firstLetter}${rest}`
             return (
@@ -258,12 +286,21 @@ const CategoryEdit = ({ user }: Props) => {
         <form
           onSubmit={(e) => {
             e.preventDefault()
+
+            if (isTestUser) {
+              dispatch(
+                notify('Testaajakäyttäjällä muokkaukset ovat estetty.', true, 5)
+              )
+              return
+            }
+
             if (newName.trim() === '') {
               dispatch(notify(`Kategorian nimi ei voi olla tyhjä`, true, 4))
               return
             } else if (
               categories.some(
-                (category) => category.kategoria?.toLowerCase() === newName?.toLowerCase()
+                (category) =>
+                  category.kategoria?.toLowerCase() === newName?.toLowerCase()
               )
             ) {
               dispatch(notify(`Kategoria ${newName} on jo olemassa`, true, 4))
@@ -281,7 +318,10 @@ const CategoryEdit = ({ user }: Props) => {
                     if ('payload' in result && result.payload !== undefined) {
                       dispatch(notify(`${result.payload}`, true, 8))
                     }
-                  } else dispatch(notify('Kategoria lisätty onnistuneesti', false, 3))
+                  } else
+                    dispatch(
+                      notify('Kategoria lisätty onnistuneesti', false, 3)
+                    )
                   dispatch(fetchServices())
                 })
                 .then(() => {
@@ -291,37 +331,43 @@ const CategoryEdit = ({ user }: Props) => {
                 })
                 .catch((error) => {
                   console.error(error)
-                  dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 4))
+                  dispatch(
+                    notify(
+                      `Virhe! ${error.response.data.message ?? ''}`,
+                      true,
+                      4
+                    )
+                  )
                 })
             }
           }}
         >
-          <div className='input-wrap'>
-            <label htmlFor='category-new'>Kategorian nimi: </label>
-            <span className='input'>
+          <div className="input-wrap">
+            <label htmlFor="category-new">Kategorian nimi: </label>
+            <span className="input">
               <input
-                id='category-new'
+                id="category-new"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
               />
             </span>
           </div>
-          <div className='input-wrap'>
-            <label htmlFor='category-info'>Kategorian tarkenne: </label>
-            <span className='input'>
+          <div className="input-wrap">
+            <label htmlFor="category-info">Kategorian tarkenne: </label>
+            <span className="input">
               <input
-                id='category-info'
+                id="category-info"
                 value={info}
                 onChange={(e) => setInfo(e.target.value)}
               />
             </span>
           </div>
-          <button type='submit'>Lisää kategoria</button>
+          <button type="submit">Lisää kategoria</button>
         </form>
 
-        <h3 id='muokkaa-kategoriaa'>Muokkaa kategoriaa</h3>
+        <h3 id="muokkaa-kategoriaa">Muokkaa kategoriaa</h3>
         <form
-          className='edit-category'
+          className="edit-category"
           onSubmit={(e) => {
             editCategory(e)
           }}
@@ -329,8 +375,8 @@ const CategoryEdit = ({ user }: Props) => {
           {categories?.length > 0 && (
             <>
               <Select
-                className='category-select'
-                id='category-edit'
+                className="category-select"
+                id="category-edit"
                 value={category_}
                 onChange={(o) => {
                   setCategory(o as SelectOption)
@@ -340,20 +386,22 @@ const CategoryEdit = ({ user }: Props) => {
                       ?.info as string
                   )
                   setCategoryObject({
-                    ...(categories?.find((c) => c?.id === o?.value) as ICategory),
+                    ...(categories?.find(
+                      (c) => c?.id === o?.value
+                    ) as ICategory),
                     viimeisinMuokkaus: user?.id as number,
                   })
                 }}
                 options={options}
-                instructions='Valitse kategoria'
-                selectAnOption='Valitse kategoria'
+                instructions="Valitse kategoria"
+                selectAnOption="Valitse kategoria"
               />
 
-              <div className='input-wrap'>
-                <label htmlFor='category-edit-name'>Kategorian nimi: </label>
-                <span className='input'>
+              <div className="input-wrap">
+                <label htmlFor="category-edit-name">Kategorian nimi: </label>
+                <span className="input">
                   <input
-                    id='category-edit-name'
+                    id="category-edit-name"
                     value={name}
                     onChange={(e) => {
                       setName(e.target.value)
@@ -366,11 +414,13 @@ const CategoryEdit = ({ user }: Props) => {
                   />
                 </span>
               </div>
-              <div className='input-wrap'>
-                <label htmlFor='category-edit-info'>Kategorian tarkenne: </label>
-                <span className='input'>
+              <div className="input-wrap">
+                <label htmlFor="category-edit-info">
+                  Kategorian tarkenne:{' '}
+                </label>
+                <span className="input">
                   <input
-                    id='category-edit-info'
+                    id="category-edit-info"
                     value={info}
                     onChange={(e) => {
                       setInfo(e.target.value)
@@ -383,7 +433,7 @@ const CategoryEdit = ({ user }: Props) => {
                   />
                 </span>
               </div>
-              <button type='submit'>Tallenna</button>
+              <button type="submit">Tallenna</button>
             </>
           )}
         </form>
@@ -391,32 +441,43 @@ const CategoryEdit = ({ user }: Props) => {
         <h3>Poista tyhjä kategoria</h3>
         <p>
           Jos kategoriaan ei ole liitetty yhtään palvelua, voit poistaa sen. Jos
-          kategoriaan on liitetty palveluita, poista ensin kaikki palvelut kategoriasta.
+          kategoriaan on liitetty palveluita, poista ensin kaikki palvelut
+          kategoriasta.
         </p>
         <form
           onSubmit={(e) => {
             e.preventDefault()
+
+            if (isTestUser) {
+              dispatch(
+                notify('Testaajakäyttäjällä muokkaukset ovat estetty.', true, 5)
+              )
+              return
+            }
+
             removeCategory(categoryObject?.id as number)
           }}
         >
           {categories?.length > 0 && emptyOptions.length > 0 ? (
             <div>
               <Select
-                className='category-select'
-                id='category-empty'
+                className="category-select"
+                id="category-empty"
                 value={emptyCategory}
                 onChange={(o) => {
                   setEmptyCategory(o as SelectOption)
                   setCategoryObject({
-                    ...(categories?.find((c) => c?.id === o?.value) as ICategory),
+                    ...(categories?.find(
+                      (c) => c?.id === o?.value
+                    ) as ICategory),
                     viimeisinMuokkaus: user?.id as number,
                   })
                 }}
                 options={emptyOptions}
-                instructions='Valitse kategoria'
+                instructions="Valitse kategoria"
                 selectAnOption={emptyCategory?.label}
               />
-              <button type='submit' className='danger'>
+              <button type="submit" className="danger">
                 Poista kategoria
               </button>
             </div>

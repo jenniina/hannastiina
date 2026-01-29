@@ -21,6 +21,7 @@ interface Props {
 
 const Users = ({ user, users, windowWidth }: Props) => {
   const dispatch = useAppDispatch()
+  const isTestUser = Number(user?.role) === 0
   const [username, setUsername] = useState('')
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
@@ -31,6 +32,12 @@ const Users = ({ user, users, windowWidth }: Props) => {
 
   const addUser = async (event: FormEvent) => {
     event.preventDefault()
+
+    if (isTestUser) {
+      dispatch(notify('Testaajakäyttäjällä muokkaukset ovat estetty.', true, 5))
+      return
+    }
+
     if (password !== passwordAgain) {
       dispatch(notify('Salasanat eivät täsmää', true, 5))
       return
@@ -69,8 +76,8 @@ const Users = ({ user, users, windowWidth }: Props) => {
   return (
     <>
       {user && Number(user?.role) !== 1 ? (
-        <div className='edit'>
-          <section id='kayttajat' className='card kayttajat'>
+        <div className="edit">
+          <section id="kayttajat" className="card kayttajat">
             <h2>Käyttäjähallinta</h2>
             <h3>Käyttäjälista</h3>
             {windowWidth > 600 ? (
@@ -109,21 +116,29 @@ const Users = ({ user, users, windowWidth }: Props) => {
                                 {u?.role && Number(u.role) > 2
                                   ? 'Omistaja'
                                   : u?.role && Number(u.role) > 1
-                                  ? 'Hallinnoija'
-                                  : u?.role && Number(u.role) > 0
-                                  ? 'Valtuutettu'
-                                  : 'Testaaja'}
+                                    ? 'Hallinnoija'
+                                    : u?.role && Number(u.role) > 0
+                                      ? 'Valtuutettu'
+                                      : 'Testaaja'}
                               </span>
                             </td>
                             <td>
                               {user._id !== u._id && Number(u.role) < 3 && (
                                 <button
-                                  className='danger smaller'
+                                  className="danger smaller"
                                   onClick={() => {
-                                    if (window.confirm(`Poistetaanko ${u.name}?`))
+                                    if (
+                                      window.confirm(`Poistetaanko ${u.name}?`)
+                                    )
                                       dispatch(removeUser(u._id))
                                         .then(() =>
-                                          dispatch(notify('Käyttäjä poistettu', false, 5))
+                                          dispatch(
+                                            notify(
+                                              'Käyttäjä poistettu',
+                                              false,
+                                              5
+                                            )
+                                          )
                                         )
                                         .then(() => dispatch(initializeUsers()))
                                         .catch((e) => {
@@ -183,10 +198,12 @@ const Users = ({ user, users, windowWidth }: Props) => {
                         </td>
                         <td>
                           <button
-                            className='danger smaller'
+                            className="danger smaller"
                             onClick={() => {
                               if (window.confirm(`Poistetaanko Tester?`))
-                                dispatch(notify('Käyttäjää ei voi poistaa', true, 5))
+                                dispatch(
+                                  notify('Käyttäjää ei voi poistaa', true, 5)
+                                )
                             }}
                           >
                             Poista
@@ -219,12 +236,12 @@ const Users = ({ user, users, windowWidth }: Props) => {
                           {u?.role && Number(u.role) > 2
                             ? 'Omistaja'
                             : u?.role && Number(u.role) > 1
-                            ? 'Hallinnoija'
-                            : ''}
+                              ? 'Hallinnoija'
+                              : ''}
                         </span>
                         {user._id !== u._id && Number(u.role) < 3 && (
                           <button
-                            className='danger smaller'
+                            className="danger smaller"
                             onClick={() => {
                               if (
                                 user &&
@@ -233,16 +250,25 @@ const Users = ({ user, users, windowWidth }: Props) => {
                               )
                                 dispatch(removeUser(u._id))
                                   .then(() =>
-                                    dispatch(notify('Käyttäjä poistettu', false, 5))
+                                    dispatch(
+                                      notify('Käyttäjä poistettu', false, 5)
+                                    )
                                   )
                                   .then(() => dispatch(initializeUsers()))
                                   .catch((e) => {
                                     console.error(e)
                                     dispatch(
-                                      notify(`Virhe: ${e.response.data.message}`, true, 8)
+                                      notify(
+                                        `Virhe: ${e.response.data.message}`,
+                                        true,
+                                        8
+                                      )
                                     )
                                   })
-                              else dispatch(notify('Käyttäjää ei voi poistaa', true, 5))
+                              else
+                                dispatch(
+                                  notify('Käyttäjää ei voi poistaa', true, 5)
+                                )
                             }}
                           >
                             <span>Poista</span>
@@ -267,10 +293,12 @@ const Users = ({ user, users, windowWidth }: Props) => {
                       <span>(tester@test.ing)</span>
                       <span>Testaaja</span>
                       <button
-                        className='danger smaller'
+                        className="danger smaller"
                         onClick={() => {
                           if (window.confirm(`Poistetaanko Tester?`))
-                            dispatch(notify('Käyttäjää ei voi poistaa', true, 5))
+                            dispatch(
+                              notify('Käyttäjää ei voi poistaa', true, 5)
+                            )
                         }}
                       >
                         Poista
@@ -286,12 +314,26 @@ const Users = ({ user, users, windowWidth }: Props) => {
             <form
               onSubmit={(e) => {
                 e.preventDefault()
+
+                if (isTestUser) {
+                  dispatch(
+                    notify(
+                      'Testaajakäyttäjällä muokkaukset ovat estetty.',
+                      true,
+                      5
+                    )
+                  )
+                  return
+                }
+
                 if (password !== passwordAgain) {
                   dispatch(notify('Salasanat eivät täsmää', true, 5))
                   return
                 }
                 if (user && Number(user?.role) > 0)
-                  dispatch(updatePassword({ _id: user?._id, password, passwordOld }))
+                  dispatch(
+                    updatePassword({ _id: user?._id, password, passwordOld })
+                  )
                     .then(() => {
                       setUsername('')
                       setPassword('')
@@ -300,55 +342,73 @@ const Users = ({ user, users, windowWidth }: Props) => {
                     })
                     .catch((e) => {
                       console.error(e)
-                      dispatch(notify(`Virhe: ${e.response.data.message}`, true, 8))
+                      dispatch(
+                        notify(`Virhe: ${e.response.data.message}`, true, 8)
+                      )
                     })
                 else dispatch(notify('Ei oikeuksia vaihtaa salasanaa', true, 5))
               }}
             >
-              <div className='input-wrap'>
-                <label htmlFor='password-old'>Nykyinen salasana: </label>
-                <span className='input'>
+              <div className="input-wrap">
+                <label htmlFor="password-old">Nykyinen salasana: </label>
+                <span className="input">
                   <input
-                    id='password-old'
-                    type='password'
-                    name='passwordOld'
+                    id="password-old"
+                    type="password"
+                    name="passwordOld"
                     value={passwordOld}
                     onChange={({ target }) => setPasswordOld(target.value)}
                   />
                 </span>
               </div>
-              <div className='input-wrap'>
-                <label htmlFor='password-change'>Uusi salasana: </label>
-                <span className='input'>
+              <div className="input-wrap">
+                <label htmlFor="password-change">Uusi salasana: </label>
+                <span className="input">
                   <input
-                    id='password-change'
-                    type='password'
-                    name='password'
+                    id="password-change"
+                    type="password"
+                    name="password"
                     onChange={({ target }) => setPassword(target.value)}
                   />
                 </span>
               </div>
-              <div className='input-wrap'>
-                <label htmlFor='password-change2'>Uusi salasana uudelleen: </label>
-                <span className='input'>
+              <div className="input-wrap">
+                <label htmlFor="password-change2">
+                  Uusi salasana uudelleen:{' '}
+                </label>
+                <span className="input">
                   <input
-                    id='password-change2'
-                    type='password'
-                    name='password'
+                    id="password-change2"
+                    type="password"
+                    name="password"
                     value={passwordAgain}
                     onChange={({ target }) => setPasswordAgain(target.value)}
                   />
                 </span>
               </div>
-              <button type='submit'>Vaihda salasana</button>
+              <button type="submit">Vaihda salasana</button>
             </form>
 
             <h4>Muokkaa nimeäsi</h4>
             <form
               onSubmit={(e) => {
                 e.preventDefault()
+
+                if (isTestUser) {
+                  dispatch(
+                    notify(
+                      'Testaajakäyttäjällä muokkaukset ovat estetty.',
+                      true,
+                      5
+                    )
+                  )
+                  return
+                }
+
                 if (user && Number(user?.role) > 0)
-                  dispatch(updateUser({ _id: user?._id, name: user_name, passwordOld }))
+                  dispatch(
+                    updateUser({ _id: user?._id, name: user_name, passwordOld })
+                  )
                     .then((u) => dispatch(refreshUser(u.user)))
                     .then(() => {
                       setUsername('')
@@ -359,43 +419,57 @@ const Users = ({ user, users, windowWidth }: Props) => {
                     .then(() => dispatch(initializeUser()))
                     .catch((e) => {
                       console.error(e)
-                      dispatch(notify(`Virhe: ${e.response.data.message}`, true, 8))
+                      dispatch(
+                        notify(`Virhe: ${e.response.data.message}`, true, 8)
+                      )
                     })
                 else dispatch(notify('Ei oikeuksia vaihtaa nimeä', true, 5))
               }}
             >
-              <div className='input-wrap'>
-                <label htmlFor='name-change'>Nimi: </label>
-                <span className='input'>
+              <div className="input-wrap">
+                <label htmlFor="name-change">Nimi: </label>
+                <span className="input">
                   <input
-                    id='name-change'
-                    type='text'
-                    name='name'
-                    autoComplete='name'
+                    id="name-change"
+                    type="text"
+                    name="name"
+                    autoComplete="name"
                     value={user_name}
                     onChange={({ target }) => setUser_name(target.value)}
                   />
                 </span>
               </div>
-              <div className='input-wrap'>
-                <label htmlFor='password-old2'>Salasana: </label>
-                <span className='input'>
+              <div className="input-wrap">
+                <label htmlFor="password-old2">Salasana: </label>
+                <span className="input">
                   <input
-                    id='password-old2'
-                    type='password'
-                    name='passwordOld'
+                    id="password-old2"
+                    type="password"
+                    name="passwordOld"
                     value={passwordOld}
                     onChange={({ target }) => setPasswordOld(target.value)}
                   />
                 </span>
               </div>
-              <button type='submit'>Vaihda nimi</button>
+              <button type="submit">Vaihda nimi</button>
             </form>
 
             <h4>Muokkaa sähköpostiasi</h4>
             <form
               onSubmit={(e) => {
                 e.preventDefault()
+
+                if (isTestUser) {
+                  dispatch(
+                    notify(
+                      'Testaajakäyttäjällä muokkaukset ovat estetty.',
+                      true,
+                      5
+                    )
+                  )
+                  return
+                }
+
                 if (user && Number(user?.role) > 0)
                   dispatch(
                     updateUsername({
@@ -414,98 +488,101 @@ const Users = ({ user, users, windowWidth }: Props) => {
                     .then(() => dispatch(initializeUser()))
                     .catch((e) => {
                       console.error(e)
-                      dispatch(notify(`Virhe: ${e.response.data.message}`, true, 8))
+                      dispatch(
+                        notify(`Virhe: ${e.response.data.message}`, true, 8)
+                      )
                     })
-                else dispatch(notify('Ei oikeuksia vaihtaa sähköpostia', true, 5))
+                else
+                  dispatch(notify('Ei oikeuksia vaihtaa sähköpostia', true, 5))
               }}
             >
-              <div className='input-wrap'>
-                <label htmlFor='username-change'>Sähköposti: </label>
-                <span className='input'>
+              <div className="input-wrap">
+                <label htmlFor="username-change">Sähköposti: </label>
+                <span className="input">
                   <input
-                    id='username-change'
-                    type='email'
-                    name='username'
-                    autoComplete='email'
+                    id="username-change"
+                    type="email"
+                    name="username"
+                    autoComplete="email"
                     value={user_username}
                     onChange={({ target }) => setUser_username(target.value)}
                   />
                 </span>
               </div>
-              <div className='input-wrap'>
-                <label htmlFor='password-old3'>Salasana: </label>
-                <span className='input'>
+              <div className="input-wrap">
+                <label htmlFor="password-old3">Salasana: </label>
+                <span className="input">
                   <input
-                    id='password-old3'
-                    type='password'
-                    name='passwordOld'
+                    id="password-old3"
+                    type="password"
+                    name="passwordOld"
                     value={passwordOld}
                     onChange={({ target }) => setPasswordOld(target.value)}
                   />
                 </span>
               </div>
-              <button type='submit'>Vaihda sähköposti</button>
+              <button type="submit">Vaihda sähköposti</button>
             </form>
 
             <h3>Lisää uusi käyttäjä</h3>
             <form onSubmit={addUser}>
-              <div className='input-wrap'>
-                <label htmlFor='username-create'>Sähköposti:</label>
-                <span className='input'>
+              <div className="input-wrap">
+                <label htmlFor="username-create">Sähköposti:</label>
+                <span className="input">
                   <input
-                    id='username-create'
-                    type='email'
-                    name='username'
-                    autoComplete='email'
+                    id="username-create"
+                    type="email"
+                    name="username"
+                    autoComplete="email"
                     value={username}
                     onChange={({ target }) => setUsername(target.value)}
                   />
                 </span>
               </div>
-              <div className='input-wrap'>
-                <label htmlFor='name-create'>Nimi: </label>
-                <span className='input'>
+              <div className="input-wrap">
+                <label htmlFor="name-create">Nimi: </label>
+                <span className="input">
                   <input
-                    id='name-create'
-                    type='text'
-                    name='name'
+                    id="name-create"
+                    type="text"
+                    name="name"
                     value={name}
-                    autoComplete='name'
+                    autoComplete="name"
                     onChange={({ target }) => setName(target.value)}
                   />
                 </span>
               </div>
-              <div className='input-wrap'>
-                <label htmlFor='password-create'>Salasana: </label>
-                <span className='input'>
+              <div className="input-wrap">
+                <label htmlFor="password-create">Salasana: </label>
+                <span className="input">
                   <input
-                    id='password-create'
-                    type='password'
-                    name='password'
+                    id="password-create"
+                    type="password"
+                    name="password"
                     value={password}
                     onChange={({ target }) => setPassword(target.value)}
                   />
                 </span>
               </div>
-              <div className='input-wrap'>
-                <label htmlFor='password-create2'>Salasana uudelleen: </label>
-                <span className='input'>
+              <div className="input-wrap">
+                <label htmlFor="password-create2">Salasana uudelleen: </label>
+                <span className="input">
                   <input
-                    id='password-create2'
-                    type='password'
-                    name='passwordAgain'
+                    id="password-create2"
+                    type="password"
+                    name="passwordAgain"
                     value={passwordAgain}
                     onChange={({ target }) => setPasswordAgain(target.value)}
                   />
                 </span>
               </div>
-              <div className='input-wrap'>
-                <label htmlFor='admin'>Ylläpitäjä: </label>
-                <span className='admin-input-wrap'>
-                  <input id='admin' type='checkbox' name='admin' />
+              <div className="input-wrap">
+                <label htmlFor="admin">Ylläpitäjä: </label>
+                <span className="admin-input-wrap">
+                  <input id="admin" type="checkbox" name="admin" />
                 </span>
               </div>
-              <button type='submit'>Luo käyttäjä</button>
+              <button type="submit">Luo käyttäjä</button>
             </form>
           </section>
         </div>
