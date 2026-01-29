@@ -15,6 +15,7 @@ import { useSelector } from 'react-redux'
 import { useAppDispatch } from './hooks/useAppDispatch'
 import { initializeUser, initializeUsers } from './reducers/usersReducer'
 import Header from './components/Header'
+import SEO from './components/SEO'
 
 function App() {
   const user = useSelector((state: IReducers) => state.users?.user as IUser)
@@ -34,7 +35,12 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (user && user?.role !== undefined && user?.role !== null && Number(user?.role) > 1)
+    if (
+      user &&
+      user?.role !== undefined &&
+      user?.role !== null &&
+      Number(user?.role) > 1
+    )
       dispatch(initializeUsers())
   }, [user])
 
@@ -65,17 +71,24 @@ function App() {
 
   return (
     <div style={styleInnerWrap}>
+      <SEO
+        title="Hannastiina Parturi Kampaamo"
+        description="Parturi Kampaamo Hannastiina - demosivusto"
+        canonicalUrl={
+          typeof window !== 'undefined' ? window.location.href : undefined
+        }
+      />
       <Header
         user={user}
         handleScrollToElement={handleScrollToElement}
         windowWidth={windowWidth}
         windowHeight={windowHeight}
       />
-      <main id='main'>
-        <div className='inner-container'>
+      <main id="main">
+        <div className="inner-container">
           {user && (
             <>
-              <div className='top-links'>
+              <div className="top-links">
                 <div>
                   {user?.role !== undefined &&
                     user?.role !== null &&
@@ -86,7 +99,7 @@ function App() {
                         }}
                       >
                         <span>Käyttäjät</span>
-                        <span className='around'>&#xFE3D;</span>
+                        <span className="around">&#xFE3D;</span>
                       </button>
                     )}
 
@@ -99,7 +112,7 @@ function App() {
                         }}
                       >
                         <span>Kategoriat</span>
-                        <span className='around'>&#xFE3D;</span>
+                        <span className="around">&#xFE3D;</span>
                       </button>
                     )}
 
@@ -112,7 +125,7 @@ function App() {
                         }}
                       >
                         <span>Palvelut</span>
-                        <span className='around'>&#xFE3D;</span>
+                        <span className="around">&#xFE3D;</span>
                       </button>
                     )}
                 </div>
@@ -144,17 +157,17 @@ function App() {
           )}
         </div>
       </main>
-      <footer id='footer'>
-        <div className='inner-container'>
+      <footer id="footer">
+        <div className="inner-container">
           <address>
-            <h2 id='yhteystiedot'>Yhteystiedot</h2>
+            <h2 id="yhteystiedot">Yhteystiedot</h2>
             <p>
               <strong>Parturi Kampaamo Hannastiina</strong>{' '}
             </p>
             <p>
               <strong>Puhelin: </strong>{' '}
               <span>
-                <a href='tel:095666129'>09 566 61 29</a>
+                <a href="tel:095666129">09 566 61 29</a>
               </span>
             </p>
             <p>
@@ -162,13 +175,17 @@ function App() {
               <span>Sitratie 3, 00420 Helsinki</span>
             </p>
           </address>
-          <div id='aukioloajat'>
+          <div id="aukioloajat">
             <h2>Aukioloajat</h2>
             <p>Sopimuksen mukaan</p>
 
             <div className={`login-wrap ${isOpen ? 'open' : ''}`}>
               <div ref={ref}>
-                <Login isOpen={isOpen} setIsFormOpen={setIsOpen} text='etusivu' />
+                <Login
+                  isOpen={isOpen}
+                  setIsFormOpen={setIsOpen}
+                  text="etusivu"
+                />
               </div>
             </div>
           </div>
