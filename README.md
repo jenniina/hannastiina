@@ -26,11 +26,13 @@ _Kolmen käyttäjäroolin lisäksi on neljäs testaajarooli. Sivuston omistaja j
 - react redux
 - @reduxjs/toolkit
 - axios
+- react-helmet-async
+- vike
 
 #### React Dev-dependencies | _React-kehitysriippuvuudet_
 
 - typescript
-- vite
+- vite (6.x, required by Vike)
 - rimraf
 - rollup-plugin-copy
 - eslint
@@ -64,3 +66,57 @@ _Kolmen käyttäjäroolin lisäksi on neljäs testaajarooli. Sivuston omistaja j
 - @types/express
 - @types/jsonwebtoken
 - @types/node
+
+## SSR / Pre-rendering (Vike)
+
+The React frontend is built with **Vike** (SSR/SSG on top of Vite). On `npm run build` it produces:
+
+- `Hannastiina_Node/build/dist/client` (static client assets + prerendered HTML)
+- `Hannastiina_Node/build/dist/server` (server bundle used by Vike during prerender)
+
+The Node backend serves the prerendered HTML when available and falls back to the SPA `index.html`.
+
+_React-frontend on toteutettu Vike:llä (SSR/SSG Viten päälle). Build tuottaa client- ja server-bundlet sekä prerenderöidyn HTML:n Node-projektin `build/dist`-kansioon. Node tarjoilee prerenderöidyn HTML:n, jos se löytyy, ja muuten käyttää SPA:n `index.html`:ää._
+
+### Key files
+
+- Vike entry points:
+  - [Hannastiina_React/src/pages/+config.ts](Hannastiina_React/src/pages/+config.ts)
+  - [Hannastiina_React/src/pages/+onRenderHtml.tsx](Hannastiina_React/src/pages/+onRenderHtml.tsx)
+  - [Hannastiina_React/src/pages/+onRenderClient.tsx](Hannastiina_React/src/pages/+onRenderClient.tsx)
+  - [Hannastiina_React/src/pages/+onBeforePrerenderStart.ts](Hannastiina_React/src/pages/+onBeforePrerenderStart.ts)
+- SEO helper (SSR-safe head tags):
+  - [Hannastiina_React/src/components/SEO/SEO.tsx](Hannastiina_React/src/components/SEO/SEO.tsx)
+- Node static serving + prerender fallback:
+  - [Hannastiina_Node/src/app.ts](Hannastiina_Node/src/app.ts)
+
+### Prerendered routes
+
+Currently only `/` is prerendered (see `+onBeforePrerenderStart.ts`).
+
+## Development
+
+### Frontend only (Vite dev server)
+
+````bash
+cd Hannastiina_React
+npm install
+npm run dev
+
+
+### Production build (SSR + prerender output)
+
+```bash
+cd Hannastiina_React
+npm install
+npm run build
+````
+
+### Backend (serves the built frontend + API)
+
+```bash
+cd Hannastiina_Node
+npm install
+npm run build
+npm start
+```
