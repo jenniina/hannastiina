@@ -22,6 +22,7 @@ type SingleSelectProps = {
 type SelectProps = {
   instructions: string
   hide?: boolean
+  disabled?: boolean
   id: string
   className: string
   options: SelectOption[]
@@ -34,6 +35,7 @@ let searchTerm = ''
 const Select = ({
   instructions,
   hide,
+  disabled,
   id,
   className,
   multiple,
@@ -75,7 +77,9 @@ const Select = ({
 
   function isOptionSelected(option: SelectOption) {
     if (multiple) {
-      return value?.some((selectedOption) => selectedOption.label === option.label)
+      return value?.some(
+        (selectedOption) => selectedOption.label === option.label
+      )
     } else {
       return value?.label === option.label
     }
@@ -102,6 +106,7 @@ const Select = ({
   useEffect(() => {
     const keyHandler = (e: KeyboardEvent) => {
       if (e.target !== containerRef.current) return
+      if (disabled) return
       switch (e.code) {
         case 'Enter':
         case 'Space':
@@ -151,10 +156,12 @@ const Select = ({
     return () => {
       containerRef.current?.removeEventListener('keydown', keyHandler)
     }
-  }, [isOpen, highlightedIndex, options])
+  }, [disabled, isOpen, highlightedIndex, options])
 
   return (
-    <div className={`${styles['select-container']} select-container ${className}`}>
+    <div
+      className={`${styles['select-container']} select-container ${className}`}
+    >
       <span
         id={`${id}-instructions`}
         className={`
@@ -168,30 +175,35 @@ const Select = ({
       </span>
       <div
         id={`${id}-container`}
-        role='combobox'
+        role="combobox"
         aria-labelledby={`${id}-instructions`}
         aria-controls={id}
         aria-expanded={isOpen}
         aria-activedescendant={`${id}-${highlightedIndex}`}
+        aria-disabled={disabled ? true : undefined}
         ref={containerRef}
         onBlur={() => setIsOpen(false)}
-        onClick={() => setIsOpen((prev) => !prev)}
-        tabIndex={0}
+        onClick={() => {
+          if (disabled) return
+          setIsOpen((prev) => !prev)
+        }}
+        tabIndex={disabled ? -1 : 0}
         className={
           multiple
             ? `${styles.multiple} ${styles.container} multiple container`
             : `${styles.container} container`
         }
       >
-        <span className={styles.scr} aria-live='polite' ref={ariaLive}></span>
+        <span className={styles.scr} aria-live="polite" ref={ariaLive}></span>
         <span className={`${styles.value} value`}>
           {multiple && value?.length === 1 && value[0].value == '' ? (
             <span>{selectAnOption}</span>
           ) : multiple && value?.length > 0 ? (
             value?.map((v) => (
               <button
-                type='button'
+                type="button"
                 key={`${v.value}`}
+                disabled={disabled}
                 onClick={(e) => {
                   e.stopPropagation()
                   selectOption(v)
@@ -232,7 +244,10 @@ const Select = ({
                 className={`${styles['option-btn']} option-btn`}
               >
                 {v?.label}
-                <span aria-hidden='true' className={`${styles['remove-btn']} remove-btn`}>
+                <span
+                  aria-hidden="true"
+                  className={`${styles['remove-btn']} remove-btn`}
+                >
                   &times;
                 </span>
                 <span className={`${styles.scr} scr`}>remove</span>
@@ -251,15 +266,15 @@ const Select = ({
           }}
           className={`${styles['clear-btn']} clear-btn`}
         >
-          <span aria-hidden='true'>&times;</span>
+          <span aria-hidden="true">&times;</span>
           <span className={`${styles.scr} scr`}>clear chosen options</span>
         </button>
 
         <div className={`${styles.caret} caret`}></div>
         <ul
           id={id}
-          aria-label='options'
-          role='listbox'
+          aria-label="options"
+          role="listbox"
           aria-multiselectable={multiple ? 'true' : 'false'}
           aria-expanded={isOpen}
           aria-labelledby={`${id}-instructions`}
@@ -267,7 +282,7 @@ const Select = ({
         >
           {options?.map((option, index) => (
             <li
-              role='option'
+              role="option"
               aria-selected={isOptionSelected(option) ? 'true' : 'false'}
               onClick={(e) => {
                 e.stopPropagation()
@@ -293,7 +308,7 @@ const Select = ({
                         ?.replace(/[^a-zA-Z]/g, '')
                     : ''
                 }`}
-                type='checkbox'
+                type="checkbox"
                 className={`${styles.scr} scr`}
                 value={option?.label}
                 name={`${id}-${

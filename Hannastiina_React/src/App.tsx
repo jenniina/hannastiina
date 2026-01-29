@@ -39,7 +39,7 @@ function App() {
       user &&
       user?.role !== undefined &&
       user?.role !== null &&
-      Number(user?.role) > 1
+      (Number(user?.role) > 1 || Number(user?.role) === 0)
     )
       dispatch(initializeUsers())
   }, [user])
@@ -105,7 +105,7 @@ function App() {
 
                   {user?.role !== undefined &&
                     user?.role !== null &&
-                    Number(user?.role) > 1 && (
+                    (Number(user?.role) > 1 || Number(user?.role) === 0) && (
                       <button
                         onClick={(e) => {
                           handleScrollToElement(e, 'kategoriat')
@@ -140,7 +140,9 @@ function App() {
           {user &&
             user?.role !== undefined &&
             user?.role !== null &&
-            Number(user?.role) > 1 && <CategoryEdit user={user} />}
+            (Number(user?.role) > 1 || Number(user?.role) === 0) && (
+              <CategoryEdit user={user} />
+            )}
           {user ? (
             <ServiceEdit
               user={user}

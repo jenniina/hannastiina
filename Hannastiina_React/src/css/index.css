@@ -14,42 +14,12 @@
   --dark: hsl(335, 77%, 20%);
   --silver: hsl(0, 0%, 75%);
   --gray: hsl(0, 0%, 66%);
-  --gradient: linear-gradient(
-    4deg,
-    hsl(var(--hue), var(--sat), 96%) 0%,
-    hsl(var(--hue), var(--sat), 92%) 50%,
-    hsl(var(--hue), var(--sat), 84%) 100%
-  );
-  --gradient-side: linear-gradient(
-    90deg,
-    hsl(var(--hue), var(--sat), 82%) 0%,
-    hsl(var(--hue), var(--sat), 88%) 50%,
-    hsl(var(--hue), var(--sat), 88%) 100%
-  );
-  --gradient-button: linear-gradient(
-    8deg,
-    hsl(var(--hue), var(--sat), 90%) 0%,
-    hsl(var(--hue), var(--sat), 95%) 50%,
-    hsl(var(--hue), var(--sat), 90%) 70%,
-    hsl(var(--hue), var(--sat), 78%) 100%
-  );
-  --gradient-heading: linear-gradient(
-    0deg,
-    hsl(var(--hue), var(--sat), 88%) 0%,
-    hsl(var(--hue), var(--sat), 90%) 40%,
-    hsla(var(--hue), var(--sat), 90%, 0.6) 100%
-  );
-  --gradient-heading-lighter: linear-gradient(
-    0deg,
-    hsl(var(--hue), var(--sat), 90%) 0%,
-    hsl(var(--hue), var(--sat), 92%) 40%,
-    hsla(var(--hue), var(--sat), 92%, 0.3) 100%
-  );
-  --gradient-th: linear-gradient(
-    0deg,
-    hsl(var(--hue), var(--sat), 92%) 10%,
-    hsla(var(--hue), var(--sat), 92%, 0) 100%
-  );
+  --gradient: linear-gradient(4deg, hsl(var(--hue), var(--sat), 96%) 0%, hsl(var(--hue), var(--sat), 92%) 50%, hsl(var(--hue), var(--sat), 84%) 100%);
+  --gradient-side: linear-gradient(90deg, hsl(var(--hue), var(--sat), 82%) 0%, hsl(var(--hue), var(--sat), 88%) 50%, hsl(var(--hue), var(--sat), 88%) 100%);
+  --gradient-button: linear-gradient(8deg, hsl(var(--hue), var(--sat), 90%) 0%, hsl(var(--hue), var(--sat), 95%) 50%, hsl(var(--hue), var(--sat), 90%) 70%, hsl(var(--hue), var(--sat), 78%) 100%);
+  --gradient-heading: linear-gradient(0deg, hsl(var(--hue), var(--sat), 88%) 0%, hsl(var(--hue), var(--sat), 90%) 40%, hsla(var(--hue), var(--sat), 90%, 0.6) 100%);
+  --gradient-heading-lighter: linear-gradient(0deg, hsl(var(--hue), var(--sat), 90%) 0%, hsl(var(--hue), var(--sat), 92%) 40%, hsla(var(--hue), var(--sat), 92%, 0.3) 100%);
+  --gradient-th: linear-gradient(0deg, hsl(var(--hue), var(--sat), 92%) 10%, hsla(var(--hue), var(--sat), 92%, 0) 100%);
   --gap: 1rem;
   --radius-small: 0.4rem;
   --radius-medium: 0.8rem;
@@ -74,44 +44,11 @@
 
   --title-XS: calc(1rem * var(--responsive_scale));
   --title-S: calc(calc(var(--typography_ratio) * var(--responsive_scale)) * 1rem);
-  --title-M: calc(
-    calc(var(--typography_ratio) * var(--typography_ratio) * 1rem) *
-      var(--responsive_scale)
-  );
-  --title-L: calc(
-    calc(
-        calc(var(--typography_ratio) * var(--typography_ratio)) * var(--typography_ratio) *
-          1rem
-      ) * var(--responsive_scale)
-  );
-  --title-XL: calc(
-    calc(
-        calc(
-            calc(var(--typography_ratio) * var(--typography_ratio)) *
-              var(--typography_ratio)
-          ) * var(--typography_ratio) * 1rem
-      ) * var(--responsive_scale)
-  );
-  --title-XXL: calc(
-    calc(
-        calc(
-            calc(
-                calc(var(--typography_ratio) * var(--typography_ratio)) *
-                  var(--typography_ratio)
-              ) * var(--typography_ratio)
-          ) * var(--typography_ratio) * 1rem
-      ) * var(--responsive_scale)
-  );
-  --title-XXXL: calc(
-    calc(
-        calc(
-            calc(
-                calc(var(--typography_ratio) * var(--typography_ratio)) *
-                  var(--typography_ratio)
-              ) * var(--typography_ratio) * var(--typography_ratio)
-          ) * var(--typography_ratio) * 1rem
-      ) * var(--responsive_scale)
-  );
+  --title-M: calc(calc(var(--typography_ratio) * var(--typography_ratio) * 1rem) * var(--responsive_scale));
+  --title-L: calc(calc(calc(var(--typography_ratio) * var(--typography_ratio)) * var(--typography_ratio) * 1rem) * var(--responsive_scale));
+  --title-XL: calc(calc(calc(calc(var(--typography_ratio) * var(--typography_ratio)) * var(--typography_ratio)) * var(--typography_ratio) * 1rem) * var(--responsive_scale));
+  --title-XXL: calc(calc(calc(calc(calc(var(--typography_ratio) * var(--typography_ratio)) * var(--typography_ratio)) * var(--typography_ratio)) * var(--typography_ratio) * 1rem) * var(--responsive_scale));
+  --title-XXXL: calc(calc(calc(calc(calc(var(--typography_ratio) * var(--typography_ratio)) * var(--typography_ratio)) * var(--typography_ratio) * var(--typography_ratio)) * var(--typography_ratio) * 1rem) * var(--responsive_scale));
 }
 /*Pastel Pink #F8C8DC hsl(335, 77%, 88%)*/
 
@@ -275,8 +212,7 @@ button {
   background-position: top;
   color: hsl(var(--hue), var(--sat), 20%);
   cursor: pointer;
-  transition-property: outline-color, outline-width, border, background-color, color,
-    background-position;
+  transition-property: outline-color, outline-width, border, background-color, color, background-position;
   transition-timing-function: ease-in-out;
   transition-duration: 0.3s;
 }
@@ -499,8 +435,7 @@ main > div > div.edit ul.palvelulista {
 .palvelulista > li:last-child > ul > li:last-child {
   margin-bottom: var(--padd);
   border-bottom-color: var(--pink);
-  border-radius: var(--radius-small) var(--radius-small) var(--radius-medium)
-    var(--radius-medium);
+  border-radius: var(--radius-small) var(--radius-small) var(--radius-medium) var(--radius-medium);
 }
 .palvelulista > li:last-child table tbody tr:last-child td {
   border-bottom-color: var(--pink);
@@ -728,6 +663,7 @@ li.single span {
   gap: 0.5em;
   margin: 0 auto;
   width: 100%;
+  max-width: 400px;
   list-style-position: inside;
   list-style-type: decimal;
   padding-left: 1.5em;

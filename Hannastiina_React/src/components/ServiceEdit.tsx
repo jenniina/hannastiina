@@ -40,10 +40,13 @@ const ServiceEdit = ({
   maxPrice,
 }: Props) => {
   const dispatch = useAppDispatch()
-  const { services, loading, error } = useSelector((state: IReducers) => state.services)
-  const [filteredServices, setFilteredServices] = useState<IService[] | undefined>(
-    undefined
+  const isTestUser = Number(user?.role) === 0
+  const { services, loading, error } = useSelector(
+    (state: IReducers) => state.services
   )
+  const [filteredServices, setFilteredServices] = useState<
+    IService[] | undefined
+  >(undefined)
   const { categories } = useSelector((state: IReducers) => state.categories)
 
   const { listItemsByCategory, handleUpdate, handleDragging } = useDragAndDrop(
@@ -81,6 +84,10 @@ const ServiceEdit = ({
   }, [dispatch])
 
   const onDrop = async (id: number, category: string, targetIndex: number) => {
+    if (isTestUser) {
+      dispatch(notify('Testaajakäyttäjällä muokkaukset ovat estetty.', true, 5))
+      return
+    }
     handleUpdate(id, category, targetIndex)
       .then(() => dispatch(fetchServices()))
       .catch((error) => console.error(error))
@@ -95,7 +102,9 @@ const ServiceEdit = ({
       )
     } else if (filterBy === 'price') {
       setFilteredServices(
-        services?.filter((service) => service.hinta >= min && service.hinta <= max)
+        services?.filter(
+          (service) => service.hinta >= min && service.hinta <= max
+        )
       )
     } else setFilteredServices(services)
   }, [services, filterBy, searchName, min, max])
@@ -133,6 +142,12 @@ const ServiceEdit = ({
 
   const handleAddService = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    if (isTestUser) {
+      dispatch(notify('Testaajakäyttäjällä muokkaukset ovat estetty.', true, 5))
+      return
+    }
+
     if (name.trim() === '') {
       dispatch(notify('Palvelun nimi ei voi olla tyhjä', true, 5))
       return
@@ -140,7 +155,9 @@ const ServiceEdit = ({
       dispatch(notify('Palvelun hinta ei voi olla tyhjä', true, 5))
       return
     } else if (price2.trim() !== '' && Number(price) >= Number(price2)) {
-      dispatch(notify('Minimihinnan tulee olla pienempi kuin maksimihinnan', true, 5))
+      dispatch(
+        notify('Minimihinnan tulee olla pienempi kuin maksimihinnan', true, 5)
+      )
       return
     } else {
       const newService: IService = {
@@ -149,7 +166,9 @@ const ServiceEdit = ({
         tarkennus: detail,
         hinta: Number(price.replace(',', '.')),
         hinta2:
-          Number(price2.replace(',', '.')) == 0 ? null : Number(price2.replace(',', '.')),
+          Number(price2.replace(',', '.')) == 0
+            ? null
+            : Number(price2.replace(',', '.')),
         kesto: duration,
         kuvaus: description,
         viimeisinMuokkaus: user?.id as number,
@@ -169,7 +188,9 @@ const ServiceEdit = ({
         })
         .catch((error) => {
           console.error(error)
-          dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 5))
+          dispatch(
+            notify(`Virhe! ${error.response.data.message ?? ''}`, true, 5)
+          )
         })
     }
   }
@@ -229,7 +250,15 @@ const ServiceEdit = ({
   }
 
   const handleDelete = async (id: number) => {
-    if (window.confirm('Haluatko varmasti poistaa palvelun? Poistoa ei voi peruuttaa.'))
+    if (isTestUser) {
+      dispatch(notify('Testaajakäyttäjällä muokkaukset ovat estetty.', true, 5))
+      return
+    }
+    if (
+      window.confirm(
+        'Haluatko varmasti poistaa palvelun? Poistoa ei voi peruuttaa.'
+      )
+    )
       await dispatch(deleteService(id))
         .then((result) => {
           if (result.type === 'services/deleteService/rejected') {
@@ -241,14 +270,24 @@ const ServiceEdit = ({
         })
         .catch((error) => {
           console.error(error)
-          dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 5))
+          dispatch(
+            notify(`Virhe! ${error.response.data.message ?? ''}`, true, 5)
+          )
         })
   }
 
   const handleEditService = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
+
+    if (isTestUser) {
+      dispatch(notify('Testaajakäyttäjällä muokkaukset ovat estetty.', true, 5))
+      return
+    }
+
     if (price2.trim() !== '' && Number(price) >= Number(price2)) {
-      dispatch(notify('Minimihinnan tulee olla pienempi kuin maksimihinnan', true, 5))
+      dispatch(
+        notify('Minimihinnan tulee olla pienempi kuin maksimihinnan', true, 5)
+      )
       return
     } else {
       const editedService: IService = {
@@ -257,7 +296,9 @@ const ServiceEdit = ({
         tarkennus: detail,
         hinta: Number(price.replace(',', '.')),
         hinta2:
-          Number(price2.replace(',', '.')) == 0 ? null : Number(price2.replace(',', '.')),
+          Number(price2.replace(',', '.')) == 0
+            ? null
+            : Number(price2.replace(',', '.')),
         kesto: duration,
         kuvaus: description,
         viimeisinMuokkaus: user?.id as number,
@@ -277,7 +318,9 @@ const ServiceEdit = ({
         })
         .catch((error) => {
           console.error(error)
-          dispatch(notify(`Virhe! ${error.response.data.message ?? ''}`, true, 5))
+          dispatch(
+            notify(`Virhe! ${error.response.data.message ?? ''}`, true, 5)
+          )
         })
     }
   }
@@ -298,58 +341,61 @@ const ServiceEdit = ({
   }, [editOpen, addOpen])
 
   return (
-    <div id='palvelut' className='edit'>
-      <section className='card'>
+    <div id="palvelut" className="edit">
+      <section className="card">
         <h2>Palvelut</h2>
 
         <h3>Muokkaa palveluita</h3>
-        <div className='controls'>
-          <div className='input-wrap searchname'>
-            <label htmlFor='searchname2'>
+        <div className="controls">
+          <div className="input-wrap searchname">
+            <label htmlFor="searchname2">
               <span>Etsi palvelua nimen perusteella</span>
             </label>
-            <span className='input'>
+            <span className="input">
               <input
-                id='searchname2'
-                placeholder='Etsi...'
+                id="searchname2"
+                placeholder="Etsi..."
                 value={searchName}
                 onChange={handleSearchNameChange}
               />
             </span>
           </div>
-          <form className='minmax' onSubmit={(e) => handleSearchServiceByPrice(e)}>
+          <form
+            className="minmax"
+            onSubmit={(e) => handleSearchServiceByPrice(e)}
+          >
             <legend>Rajaa hinnan perusteella</legend>
             <div>
-              <label htmlFor='min2' className='scr'>
+              <label htmlFor="min2" className="scr">
                 Minimihinta
               </label>
               <input
-                id='min2'
-                className='narrow bg'
-                type='number'
+                id="min2"
+                className="narrow bg"
+                type="number"
                 min={0}
-                name='min'
+                name="min"
                 value={min}
                 onChange={(e) => setMin(Number(e.target.value))}
               />
               &ndash;
-              <label htmlFor='max2' className='scr'>
+              <label htmlFor="max2" className="scr">
                 Maksimihinta
               </label>
               <input
-                id='max2'
-                className='narrow bg'
-                type='number'
+                id="max2"
+                className="narrow bg"
+                type="number"
                 min={10}
-                name='max'
+                name="max"
                 value={max}
                 onChange={(e) => setMax(Number(e.target.value))}
               />
               €
             </div>
-            <button type='submit'>Rajaa</button>
+            <button type="submit">Rajaa</button>
             <button
-              type='button'
+              type="button"
               onClick={() => {
                 setFilterBy('')
                 setMin(0)
@@ -364,9 +410,9 @@ const ServiceEdit = ({
           <button onClick={allServices}>Kaikki palvelut</button>
 
           <Accordion
-            text='Lisää uusi palvelu tästä'
-            className='add-service'
-            id='add-service'
+            text="Lisää uusi palvelu tästä"
+            className="add-service"
+            id="add-service"
             onClick={() => {
               reset()
             }}
@@ -378,93 +424,96 @@ const ServiceEdit = ({
               <form onSubmit={(e) => handleAddService(e)}>
                 <div>
                   <Select
-                    className='category-select'
-                    id='category-new'
+                    className="category-select"
+                    id="category-new"
                     value={category_}
                     onChange={(o) => setCategory(o as SelectOption)}
                     options={options}
-                    instructions='Valitse kategoria'
-                    selectAnOption='Valitse kategoria'
+                    instructions="Valitse kategoria"
+                    selectAnOption="Valitse kategoria"
                   />
                 </div>
-                <div className='input-wrap'>
-                  <label htmlFor='name'>Palvelun nimi</label>
-                  <span className='input'>
+                <div className="input-wrap">
+                  <label htmlFor="name">Palvelun nimi</label>
+                  <span className="input">
                     <input
                       required
-                      autoComplete='off'
-                      id='name'
+                      autoComplete="off"
+                      id="name"
                       value={name}
                       onChange={handleNameChange}
                     />
                   </span>
                 </div>
-                <div className='input-wrap'>
-                  <label htmlFor='detail'>Tarkennus</label>
-                  <span className='input'>
+                <div className="input-wrap">
+                  <label htmlFor="detail">Tarkennus</label>
+                  <span className="input">
                     <input
-                      id='detail'
+                      id="detail"
                       value={detail}
                       onChange={(e) => setDetail(e.target.value)}
                     />
                   </span>
                 </div>
-                <div className='input-wrap'>
-                  <label htmlFor='price'>Palvelun hinta tai minimihinta (€)</label>
-                  <span className='input'>
+                <div className="input-wrap">
+                  <label htmlFor="price">
+                    Palvelun hinta tai minimihinta (€)
+                  </label>
+                  <span className="input">
                     <input
                       required
-                      id='price'
-                      type='text'
+                      id="price"
+                      type="text"
                       value={price}
                       onChange={handlePriceChange}
-                      pattern='^[0-9]*[.,]?[0-9]*$'
+                      pattern="^[0-9]*[.,]?[0-9]*$"
                     />
                   </span>
                 </div>
-                <div className='input-wrap'>
-                  <label htmlFor='price2'>Palvelun maksimihinta (€)</label>
-                  <span className='input'>
+                <div className="input-wrap">
+                  <label htmlFor="price2">Palvelun maksimihinta (€)</label>
+                  <span className="input">
                     <input
-                      id='price2'
-                      type='text'
+                      id="price2"
+                      type="text"
                       value={price2}
                       onChange={handlePrice2Change}
-                      pattern='^[0-9]*[.,]?[0-9]*$'
+                      pattern="^[0-9]*[.,]?[0-9]*$"
                     />
                   </span>
                 </div>
-                <div className='input-wrap'>
-                  <label htmlFor='duration'>Palvelun kesto (minuuteissa)</label>
-                  <span className='input'>
+                <div className="input-wrap">
+                  <label htmlFor="duration">Palvelun kesto (minuuteissa)</label>
+                  <span className="input">
                     <input
-                      id='duration'
+                      id="duration"
                       value={duration}
                       onChange={handleDurationChange}
                     />
                   </span>
                 </div>
                 <div>
-                  <label htmlFor='description'>Palvelun kuvaus</label>
+                  <label htmlFor="description">Palvelun kuvaus</label>
                   <textarea
-                    id='description'
+                    id="description"
                     value={description}
                     onChange={handleDescriptionChange}
                     rows={5}
                   />
                 </div>
 
-                <button type='submit'>Lisää palvelu</button>
+                <button type="submit">Lisää palvelu</button>
               </form>
             </>
           </Accordion>
         </div>
         <p>
-          Vedä ja pudota palvelut haluamaasi järjestykseen kategoriansa sisällä. Uusi
-          järjestys tallentuu automaattisesti. Paina palvelun "Muokkaa" painiketta
-          halutessasi vaihtaa sen kategoriaa tai muuttaa muita tietoja.
+          Vedä ja pudota palvelut haluamaasi järjestykseen kategoriansa sisällä.
+          Uusi järjestys tallentuu automaattisesti. Paina palvelun "Muokkaa"
+          painiketta halutessasi vaihtaa sen kategoriaa tai muuttaa muita
+          tietoja.
         </p>
-        <ul className='palvelulista' id='palvelulista'>
+        <ul className="palvelulista" id="palvelulista">
           {loading ? (
             <li>Ladataan...</li>
           ) : error ? (
@@ -478,7 +527,8 @@ const ServiceEdit = ({
                       return null // Don't render the category if there are no services
                     }
                     const foundCategory = categories.find(
-                      (cat) => cat.kategoria.toLowerCase() === category.toLowerCase()
+                      (cat) =>
+                        cat.kategoria.toLowerCase() === category.toLowerCase()
                     )
                     const firstLetter = category?.charAt(0)?.toUpperCase() ?? ''
                     const rest = category?.slice(1) ?? ''
@@ -487,10 +537,10 @@ const ServiceEdit = ({
                       <li key={category} className={`kategoria`}>
                         <h3>{kategoria}</h3>
                         {foundCategory?.info && (
-                          <strong className='info'>
+                          <strong className="info">
                             Tarkenne: {foundCategory.info}{' '}
                             <button
-                              className='smaller'
+                              className="smaller"
                               onClick={(e) => {
                                 handleScrollToElement(e, 'muokkaa-kategoriaa')
                               }}
@@ -506,7 +556,8 @@ const ServiceEdit = ({
                           }}
                           onDrop={(e) => {
                             e.preventDefault()
-                            const draggedId = e.dataTransfer.getData('application/my-app')
+                            const draggedId =
+                              e.dataTransfer.getData('application/my-app')
 
                             // Find the closest item to the drop position
                             const closestItem = Array.from(
@@ -516,7 +567,10 @@ const ServiceEdit = ({
                                 const box = child.getBoundingClientRect()
                                 const offset = Math.abs(box.top - e.clientY)
                                 if (offset < closest.offset) {
-                                  return { offset, element: child as HTMLElement }
+                                  return {
+                                    offset,
+                                    element: child as HTMLElement,
+                                  }
                                 } else {
                                   return closest
                                 }
@@ -536,7 +590,9 @@ const ServiceEdit = ({
                             <li
                               className={`${editOpen ? 'open' : ''}`}
                               key={service?.id}
-                              draggable={editId === service.id && editOpen ? false : true}
+                              draggable={
+                                editId === service.id && editOpen ? false : true
+                              }
                               onDragStart={(e) => {
                                 e.dataTransfer.setData(
                                   'application/my-app',
@@ -577,16 +633,21 @@ const ServiceEdit = ({
                                 handlePriceChange={handlePriceChange}
                                 handlePrice2Change={handlePrice2Change}
                                 handleDurationChange={handleDurationChange}
-                                handleDescriptionChange={handleDescriptionChange}
+                                handleDescriptionChange={
+                                  handleDescriptionChange
+                                }
                               />
                             </li>
                           ))}
-                          <li className='empty'>
+                          <li className="empty">
                             <button
-                              className='reset'
+                              className="reset"
                               onClick={(e) => {
                                 setAddOpen(true)
-                                handleScrollToElement(e, 'add-service-container')
+                                handleScrollToElement(
+                                  e,
+                                  'add-service-container'
+                                )
                               }}
                             >
                               Lisää palvelu
