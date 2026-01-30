@@ -33,6 +33,8 @@ import {
   comparePassword,
 } from '../controllers'
 
+import { rateLimit } from '../middleware/rateLimit'
+
 import { Router } from 'express'
 
 const router = Router()
@@ -64,9 +66,23 @@ router.put('/jarjestys', [authenticateUser, updateOrder])
 router.get('/kayttajat', [checkIfAdmin, getUsers])
 router.get('/kayttajat/:id', [checkIfAdmin, getUser])
 router.post('/kayttajat', [checkIfAdmin, addUser])
-router.put('/kayttajat/:id', [comparePassword, updateUser])
-router.put('/kayttajat/:id/sposti', [comparePassword, updateUsername])
+router.put('/kayttajat/:id', [authenticateUser, comparePassword, updateUser])
+router.put('/kayttajat/:id/sposti', [
+  authenticateUser,
+  comparePassword,
+  updateUsername,
+])
 router.delete('/kayttajat/:id', [checkIfAdmin, deleteUser])
-router.post('/kayttajat/kirjaudu', loginUser)
+router.post(
+  '/kayttajat/kirjaudu',
+  [
+    rateLimit({
+      windowMs: 15 * 60_000,
+      max: 20,
+      message: 'Liikaa kirjautumisyrityksiä, yritä myöhemmin uudelleen.',
+    }),
+  ],
+  loginUser
+)
 
 export default router
