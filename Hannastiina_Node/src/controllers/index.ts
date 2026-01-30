@@ -11,10 +11,26 @@ import bcrypt from 'bcryptjs'
 import jwt, { Secret } from 'jsonwebtoken'
 import { IToken, ITokenPayload, IUser } from '../types'
 
-const generateToken = async (id: string | undefined): Promise<string | undefined> => {
+const getJwtSecret = (): Secret => {
+  const secret = process.env.JWT_SECRET
+  if (secret && secret.trim() !== '') return secret
+
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'JWT_SECRET environment variable is required in production.'
+    )
+  }
+
+  // Dev fallback only.
+  return 'sfj0ker8GJ3RT3s5djdf23'
+}
+
+const generateToken = async (
+  id: string | undefined
+): Promise<string | undefined> => {
   if (!id) return undefined
 
-  const secret: Secret = process.env.JWT_SECRET || 'sfj0ker8GJ3RT3s5djdf23'
+  const secret: Secret = getJwtSecret()
   const options = { expiresIn: '1d' }
   try {
     const token = (await new Promise<string | undefined>((resolve, reject) => {
@@ -35,19 +51,26 @@ const generateToken = async (id: string | undefined): Promise<string | undefined
 }
 
 const verifyToken = (token: string) => {
-  const secret: Secret = process.env.JWT_SECRET || 'sfj0ker8GJ3RT3s5djdf23'
+  const secret: Secret = getJwtSecret()
 
   return jwt.verify(token, secret) as ITokenPayload
 }
 
-const verifyTokenMiddleware = async (req: Request, res: Response): Promise<void> => {
+const verifyTokenMiddleware = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const token = req.headers.authorization?.split(' ')[1] as IToken['token']
     if (!token)
-      throw new Error('Virhe: pyynnössä ei ole mukana tokenia. Kirjaudu sisään.')
+      throw new Error(
+        'Virhe: pyynnössä ei ole mukana tokenia. Kirjaudu sisään.'
+      )
     const decoded = verifyToken(token)
     if (!decoded) throw new Error('Virhe, kirjaudu uudestaan sisään')
-    const user: IUser | null = await User.findOne({ where: { _id: decoded?.userId } })
+    const user: IUser | null = await User.findOne({
+      where: { _id: decoded?.userId },
+    })
     if (!user) throw new Error('Käyttäjää ei löytynyt')
     res.status(200).json({
       message: 'Token verifioitu.',
@@ -58,13 +81,20 @@ const verifyTokenMiddleware = async (req: Request, res: Response): Promise<void>
   }
 }
 
-const checkIfAdmin = async (req: Request, res: Response, next: NextFunction) => {
+const checkIfAdmin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
     const token = req.headers.authorization?.split(' ')[1] as IToken['token']
-    if (!token) throw new Error('Pyynnössä ei ole mukana tokenia. Kirjaudu sisään.')
+    if (!token)
+      throw new Error('Pyynnössä ei ole mukana tokenia. Kirjaudu sisään.')
     const decoded = verifyToken(token)
     if (!decoded) throw new Error('Kirjaudu uudestaan sisään')
-    const findUser: IUser | null = await User.findOne({ where: { _id: decoded?.userId } })
+    const findUser: IUser | null = await User.findOne({
+      where: { _id: decoded?.userId },
+    })
 
     if (findUser && findUser?.role && Number(findUser?.role) > 1) {
       next()
@@ -82,7 +112,15 @@ const checkIfAdmin = async (req: Request, res: Response, next: NextFunction) => 
 const getUsers = async (req: Request, res: Response): Promise<void> => {
   try {
     const users: IUser[] = await User.findAll()
-    res.status(200).json(users)
+    res.status(200).json(
+      users.map((u) => ({
+        id: u.id,
+        _id: u._id,
+        name: u.name,
+        username: u.username,
+        role: u.role,
+      }))
+    )
   } catch (error) {
     console.error('Error:', error)
     res.status(500).json({ success: false, message: 'Tapahtui virhe ^' })
@@ -91,8 +129,20 @@ const getUsers = async (req: Request, res: Response): Promise<void> => {
 
 const getUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const user: IUser | null = await User.findOne({ where: { _id: req.params._id } })
-    res.status(200).json(user)
+    const user: IUser | null = await User.findOne({
+      where: { _id: req.params.id },
+    })
+    if (!user) {
+      res.status(404).json({ success: false, message: 'Käyttäjää ei löytynyt' })
+      return
+    }
+    res.status(200).json({
+      id: user.id,
+      _id: user._id,
+      name: user.name,
+      username: user.username,
+      role: user.role,
+    })
   } catch (error) {
     console.error('Error:', error)
     res.status(500).json({ success: false, message: 'Tapahtui virhe *' })
@@ -101,7 +151,10 @@ const getUser = async (req: Request, res: Response): Promise<void> => {
 
 const addUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const body = req.body as Pick<IUser, 'name' | 'username' | 'password' | 'role'>
+    const body = req.body as Pick<
+      IUser,
+      'name' | 'username' | 'password' | 'role'
+    >
 
     const saltRounds = 10
     const passwordHash = await bcrypt.hash(body.password, saltRounds)
@@ -123,7 +176,7 @@ const addUser = async (req: Request, res: Response): Promise<void> => {
         _id: user._id,
         name: user.name,
         username: user.username,
-        password: passwordHash,
+        role: user.role,
       },
       users: allUsers,
     })
@@ -152,25 +205,18 @@ const updateUser = async (req: Request, res: Response): Promise<void> => {
         user.name = name
       }
       if (password) {
-        const isMatch = await bcrypt.compare(password, user.password)
-        if (isMatch) {
-          const salt = await bcrypt.genSalt(10)
-          const hashedPassword = await bcrypt.hash(password, salt)
-          user.password = hashedPassword
+        const isSameAsOld = await bcrypt.compare(password, user.password)
+        if (isSameAsOld) {
+          res.status(400).json({
+            success: false,
+            message: 'Uusi salasana ei voi olla sama kuin vanha.',
+          })
+          return
         }
-        const updatedUser = await user.save()
-        res.status(200).json({
-          success: true,
-          message: `Käyttäjä päivitetty! ¤`,
-          user: {
-            id: user.id,
-            _id: updatedUser._id,
-            name: updatedUser.name,
-            username: updatedUser.username,
-            role: updatedUser.role,
-          },
-        })
-        return
+
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(password, salt)
+        user.password = hashedPassword
       }
       const updatedUser: IUser = await user.save()
       res.status(200).json({
@@ -213,7 +259,8 @@ const updateUsername = async (req: Request, res: Response): Promise<void> => {
       if (existingUsername && existingUsername._id !== user._id) {
         res.status(400).json({
           success: false,
-          message: 'Käyttäjätunnus ei ole vapaana. Valitse toinen käyttäjätunnus.',
+          message:
+            'Käyttäjätunnus ei ole vapaana. Valitse toinen käyttäjätunnus.',
         })
         return
       }
@@ -256,9 +303,15 @@ const deleteUser = async (req: Request, res: Response): Promise<void> => {
         return
       }
       // Find all Palvelu and Kategoria instances that were last edited by the user
-      const palvelut = await Palvelu.findAll({ where: { viimeisinMuokkaus: id } })
-      const kategoriat = await Kategoria.findAll({ where: { viimeisinMuokkaus: id } })
-      const esittelyt = await Esittely.findAll({ where: { viimeisinMuokkaus: id } })
+      const palvelut = await Palvelu.findAll({
+        where: { viimeisinMuokkaus: id },
+      })
+      const kategoriat = await Kategoria.findAll({
+        where: { viimeisinMuokkaus: id },
+      })
+      const esittelyt = await Esittely.findAll({
+        where: { viimeisinMuokkaus: id },
+      })
 
       const owner = await User.findOne({ where: { role: 3 } })
 
@@ -311,14 +364,17 @@ const authenticateUser = async (
     const decoded = verifyToken(token)
 
     if (!decoded) throw new Error('Kirjaudu uudestaan sisään')
-    const user: IUser | null = await User.findOne({ where: { _id: decoded?.userId } })
+    const user: IUser | null = await User.findOne({
+      where: { _id: decoded?.userId },
+    })
 
     if (!user) throw new Error('Autentikointi epäonnistui.')
 
-    if (Number(user.role) <= 0) throw new Error('Testitilillä ei ole käyttöoikeuksia.')
+    if (Number(user.role) <= 0)
+      throw new Error('Testitilillä ei ole käyttöoikeuksia.')
     else {
-      // Attach user information to the request object
-      req.body.user = user
+      // Attach user information (avoid trusting client-provided fields)
+      res.locals.user = user
       next()
     }
   } catch (error) {
@@ -341,7 +397,10 @@ const comparePassword = async (
     candidatePassword: string
   ): Promise<boolean> {
     try {
-      const isMatch: boolean = await bcrypt.compare(candidatePassword, this.password!)
+      const isMatch: boolean = await bcrypt.compare(
+        candidatePassword,
+        this.password!
+      )
       return isMatch
     } catch (error) {
       console.error('Virhe:', error)
@@ -349,15 +408,36 @@ const comparePassword = async (
     }
   }
   try {
-    const { _id, passwordOld } = req.body
-    const user: IUser | null = await User.findOne({ where: { _id } })
+    const { passwordOld } = req.body
+
+    const authUser = res.locals.user as IUser | undefined
+    if (!authUser) {
+      res.status(401).json({ success: false, message: 'Kirjaudu sisään.' })
+      return
+    }
+
+    // Only allow changing own account details via this route.
+    if (String(authUser._id) !== String(req.params.id)) {
+      res.status(403).json({
+        success: false,
+        message: 'Ei oikeuksia muokata toisen käyttäjän tietoja.',
+      })
+      return
+    }
+
+    const user: IUser | null = await User.findOne({
+      where: { _id: req.params.id },
+    })
 
     if (!user) {
       res.status(404).json({ success: false, message: 'Käyttäjää ei löydy. ~' })
       return
     }
     if (user) {
-      const passwordMatch: boolean = await comparePassword.call(user, passwordOld)
+      const passwordMatch: boolean = await comparePassword.call(
+        user,
+        passwordOld
+      )
 
       if (passwordMatch) {
         next()
@@ -382,7 +462,10 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
     candidatePassword: string
   ): Promise<boolean> {
     try {
-      const isMatch: boolean = await bcrypt.compare(candidatePassword, this.password!)
+      const isMatch: boolean = await bcrypt.compare(
+        candidatePassword,
+        this.password!
+      )
       return isMatch
     } catch (error) {
       console.error('Virhe:', error)
@@ -391,7 +474,9 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
   }
   try {
     const { username, password } = req.body
-    const user: IUser | null = await User.findOne({ where: { username: username } })
+    const user: IUser | null = await User.findOne({
+      where: { username: username },
+    })
 
     if (!user) {
       res.status(401).json({
@@ -414,7 +499,14 @@ const loginUser = async (req: Request, res: Response): Promise<void> => {
           },
           token,
         })
+        return
       }
+
+      res.status(401).json({
+        success: false,
+        message: `Väärä salasana tai käyttäjätunnus`,
+      })
+      return
     }
   } catch (error) {
     console.error(error)
@@ -506,7 +598,9 @@ const deleteOrder = async (req: Request, res: Response): Promise<void> => {
       },
     })
     if (!order) {
-      res.status(404).json({ success: false, message: 'Järjestystä ei löytynyt.' })
+      res
+        .status(404)
+        .json({ success: false, message: 'Järjestystä ei löytynyt.' })
       return
     }
     res.status(200).json(order)
@@ -567,7 +661,9 @@ const updateCategory = async (req: Request, res: Response): Promise<void> => {
       },
     })
     if (!category) {
-      res.status(404).json({ success: false, message: 'Kategoriaa ei löytynyt.' })
+      res
+        .status(404)
+        .json({ success: false, message: 'Kategoriaa ei löytynyt.' })
       return
     }
     res.status(200).json(category)
@@ -599,7 +695,10 @@ const getCategoryOrder = async (req: Request, res: Response): Promise<void> => {
   }
 }
 
-const updateCategoryOrder = async (req: Request, res: Response): Promise<void> => {
+const updateCategoryOrder = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   let { order } = req.body
 
   if (!Array.isArray(order)) {
@@ -657,7 +756,9 @@ const deleteCategory = async (req: Request, res: Response): Promise<void> => {
       },
     })
     if (!category) {
-      res.status(404).json({ success: false, message: 'Kategoriaa ei löytynyt.' })
+      res
+        .status(404)
+        .json({ success: false, message: 'Kategoriaa ei löytynyt.' })
       return
     }
     res.status(200).json(category)
@@ -696,10 +797,16 @@ const addOrEditIntro = async (req: Request, res: Response): Promise<void> => {
       })
       res
         .status(200)
-        .json({ success: true, message: 'Esittely päivitetty', intro: updatedIntro })
+        .json({
+          success: true,
+          message: 'Esittely päivitetty',
+          intro: updatedIntro,
+        })
     } else {
       const newIntro = await Esittely.create(req.body)
-      res.status(200).json({ success: true, message: 'Esittely luotu', intro: newIntro })
+      res
+        .status(200)
+        .json({ success: true, message: 'Esittely luotu', intro: newIntro })
     }
   } catch (error) {
     res.status(500).json({
@@ -719,7 +826,9 @@ const deleteIntro = async (req: Request, res: Response): Promise<void> => {
       },
     })
     if (!intro) {
-      res.status(404).json({ success: false, message: 'Esittelyä ei löytynyt.' })
+      res
+        .status(404)
+        .json({ success: false, message: 'Esittelyä ei löytynyt.' })
       return
     }
     res.status(200).json(intro)
@@ -767,7 +876,10 @@ const getServiceByName = async (req: Request, res: Response): Promise<void> => {
     if (!service) {
       res
         .status(404)
-        .json({ success: false, message: 'Palvelua ei löytynyt tällä nimellä.' })
+        .json({
+          success: false,
+          message: 'Palvelua ei löytynyt tällä nimellä.',
+        })
       return
     }
     res.status(200).json(service)
@@ -784,7 +896,10 @@ const getServiceByName = async (req: Request, res: Response): Promise<void> => {
 const addService = [
   authenticateUser,
   // Validate fields.
-  body('nimi').isLength({ min: 1 }).trim().withMessage('Palvelu tarvitsee nimen.'),
+  body('nimi')
+    .isLength({ min: 1 })
+    .trim()
+    .withMessage('Palvelu tarvitsee nimen.'),
   body('hinta').isNumeric().withMessage('Hinnan on oltava numero.'),
 
   // Process request after validation and sanitization.
@@ -801,7 +916,11 @@ const addService = [
       // Start a new transaction
       const result = await sequelize.transaction(async (transaction) => {
         // Increment the jarjestys of all existing Jarjestys
-        await Jarjestys.increment('jarjestys', { by: 1, where: {}, transaction })
+        await Jarjestys.increment('jarjestys', {
+          by: 1,
+          where: {},
+          transaction,
+        })
 
         // Create a new Palvelu
         const newService = await Palvelu.create(req.body, { transaction })
@@ -830,7 +949,10 @@ const addService = [
 const updateService = [
   authenticateUser,
   // Validate fields.
-  body('nimi').isLength({ min: 1 }).trim().withMessage('Palvelu tarvitsee nimen.'),
+  body('nimi')
+    .isLength({ min: 1 })
+    .trim()
+    .withMessage('Palvelu tarvitsee nimen.'),
   body('hinta').isNumeric().withMessage('Hinnan on oltava numero.'),
 
   // Process request after validation and sanitization.
@@ -850,7 +972,9 @@ const updateService = [
         },
       })
       if (!service) {
-        res.status(404).json({ success: false, message: 'Palvelua ei löytynyt.' })
+        res
+          .status(404)
+          .json({ success: false, message: 'Palvelua ei löytynyt.' })
         return
       }
       res.status(200).json(service)
